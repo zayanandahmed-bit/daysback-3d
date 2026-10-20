@@ -12,6 +12,7 @@ const C = {
   sun: 0xffb020,
   teal: 0x00d6b4,
   ink: 0x0b0820,
+  paper: 0xfdfcff,   // the site's background
 };
 
 // Camera keyframes: where the camera is and what it looks at, and the scroll
@@ -25,8 +26,9 @@ export const STATIONS = [
   { id: 'services2', t: 0.45, cam: [3.8, 12.6, -16], look: [1.0, 12, -26] },
   { id: 'autoTop', t: 0.52, cam: [8, 6, -38], look: [0, 5, -46] },
   { id: 'autoBottom', t: 0.68, cam: [8, -13, -38], look: [0, -13, -46] },
-  { id: 'voice', t: 0.77, cam: [12, -18, -55], look: [20, -18, -66] },
-  { id: 'chat', t: 0.87, cam: [-8, -13, -71], look: [-16, -14, -82] },
+  { id: 'voice', t: 0.75, cam: [12, -18, -55], look: [20, -18, -66] },
+  { id: 'chat', t: 0.82, cam: [-8, -13, -71], look: [-16, -14, -82] },
+  { id: 'chat2', t: 0.89, cam: [-23, -12, -73], look: [-16, -14, -82] },
   { id: 'out', t: 1.0, cam: [34, 16, 4], look: [2, -5, -42] },
 ];
 
@@ -62,20 +64,20 @@ function cardTexture(card, i) {
   cv.width = 1024; cv.height = 680;
   const ctx = cv.getContext('2d');
   const g = ctx.createLinearGradient(0, 0, 1024, 680);
-  g.addColorStop(0, 'rgba(36,22,92,0.96)');
-  g.addColorStop(1, 'rgba(16,10,44,0.96)');
+  g.addColorStop(0, '#ffffff');
+  g.addColorStop(1, '#f6f2ff');
   roundRect(ctx, 6, 6, 1012, 668, 56);
   ctx.fillStyle = g; ctx.fill();
   ctx.lineWidth = 5; ctx.strokeStyle = ['#8a63ff', '#ff5c9d', '#ffc04d', '#2be0c2'][i % 4]; ctx.stroke();
   ctx.font = '96px "Apple Color Emoji","Segoe UI Emoji",sans-serif';
   ctx.fillText(card.icon, 70, 170);
-  ctx.fillStyle = '#ffffff';
+  ctx.fillStyle = '#17123a';
   ctx.font = '700 70px "Space Grotesk", sans-serif';
   ctx.fillText(card.title, 70, 290);
-  ctx.fillStyle = 'rgba(230,224,255,0.82)';
+  ctx.fillStyle = '#5f5b7e';
   ctx.font = '400 38px Inter, sans-serif';
   wrap(ctx, card.short, 880).slice(0, 4).forEach((l, k) => ctx.fillText(l, 70, 370 + k * 56));
-  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.fillStyle = '#6c3cff';
   ctx.font = '600 30px Inter, sans-serif';
   ctx.fillText('CLICK TO EXPLORE  →', 70, 625);
   const tex = new THREE.CanvasTexture(cv);
@@ -84,14 +86,15 @@ function cardTexture(card, i) {
   return tex;
 }
 
-function labelSprite(text, color = '#ffffff') {
+function labelSprite(text, color = '#17123a') {
   const cv = document.createElement('canvas');
   cv.width = 1024; cv.height = 128;
   const ctx = cv.getContext('2d');
   ctx.font = '600 52px "Space Grotesk", sans-serif';
   const w = Math.min(1000, ctx.measureText(text).width + 60);
   roundRect(ctx, (1024 - w) / 2, 14, w, 100, 50);
-  ctx.fillStyle = 'rgba(12,8,34,0.78)'; ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,0.94)'; ctx.fill();
+  ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(108,60,255,0.25)'; ctx.stroke();
   ctx.fillStyle = color; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   ctx.fillText(text, 512, 66);
   const tex = new THREE.CanvasTexture(cv);
@@ -119,10 +122,10 @@ export function createWorld(canvas, { services, automations, onHover, onSelect }
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: !small, alpha: false, powerPreference: 'high-performance' });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, small ? 1.25 : 1.5));
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setClearColor(C.ink, 1);
+  renderer.setClearColor(C.paper, 1);
 
   const scene = new THREE.Scene();
-  scene.fog = new THREE.FogExp2(C.ink, 0.0065);
+  scene.fog = new THREE.FogExp2(C.paper, 0.0075);
   const camera = new THREE.PerspectiveCamera(58, window.innerWidth / window.innerHeight, 0.1, 400);
 
   const disposables = [];
@@ -154,7 +157,7 @@ export function createWorld(canvas, { services, automations, onHover, onSelect }
       pos[i + 2] = (Math.random() - 0.5) * 260 - 30;
     }
     g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-    const m = track(new THREE.PointsMaterial({ color: 0xb9a6ff, size: 0.18, transparent: true, opacity: 0.6, depthWrite: false }));
+    const m = track(new THREE.PointsMaterial({ color: C.pink, size: 0.12, transparent: true, opacity: 0.35, depthWrite: false }));
     scene.add(new THREE.Points(g, m));
   }
 
@@ -175,7 +178,7 @@ export function createWorld(canvas, { services, automations, onHover, onSelect }
       pos.set([v.x, v.y, v.z], i * 3);
     }
     g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-    const m = track(new THREE.PointsMaterial({ color: 0xc4b2ff, size: 0.16, map: glow, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
+    const m = track(new THREE.PointsMaterial({ color: C.violet, size: 0.14, map: glow, transparent: true, depthWrite: false, blending: THREE.NormalBlending }));
     network.add(new THREE.Points(g, m));
     const lines = [];
     for (let i = 0; i < N; i++) for (let j = i + 1; j < N; j++) {
@@ -183,7 +186,7 @@ export function createWorld(canvas, { services, automations, onHover, onSelect }
     }
     const lg = track(new THREE.BufferGeometry());
     lg.setAttribute('position', new THREE.BufferAttribute(new Float32Array(lines), 3));
-    const lm = track(new THREE.LineBasicMaterial({ color: C.violet, transparent: true, opacity: 0.45, blending: THREE.AdditiveBlending, depthWrite: false }));
+    const lm = track(new THREE.LineBasicMaterial({ color: 0xb9a6ff, transparent: true, opacity: 0.55, blending: THREE.NormalBlending, depthWrite: false }));
     network.add(new THREE.LineSegments(lg, lm));
   }
 
@@ -195,7 +198,7 @@ export function createWorld(canvas, { services, automations, onHover, onSelect }
     const front = new THREE.Mesh(track(new THREE.PlaneGeometry(4.4, 2.92)), track(new THREE.MeshBasicMaterial({ map: tex, transparent: true })));
     const halo = new THREE.Mesh(
       track(new THREE.PlaneGeometry(6.2, 4.6)),
-      track(new THREE.MeshBasicMaterial({ map: glow, color: [C.violet, C.pink, C.sun, C.teal][i], transparent: true, opacity: 0.18, depthWrite: false, blending: THREE.AdditiveBlending }))
+      track(new THREE.MeshBasicMaterial({ map: glow, color: [C.violet, C.pink, C.sun, C.teal][i], transparent: true, opacity: 0.18, depthWrite: false, blending: THREE.NormalBlending }))
     );
     halo.position.z = -0.05;
     group.add(halo, front);
@@ -222,7 +225,7 @@ export function createWorld(canvas, { services, automations, onHover, onSelect }
     const color = [C.violet, C.pink, C.sun, C.teal][i % 4];
     const orb = new THREE.Mesh(track(new THREE.IcosahedronGeometry(0.62, 1)), track(new THREE.MeshBasicMaterial({ color, wireframe: true, transparent: true, opacity: 0.9 })));
     const core = new THREE.Mesh(track(new THREE.SphereGeometry(0.32, 20, 20)), track(new THREE.MeshBasicMaterial({ color })));
-    const halo = new THREE.Sprite(track(new THREE.SpriteMaterial({ map: glow, color, transparent: true, opacity: 0.55, depthWrite: false, blending: THREE.AdditiveBlending })));
+    const halo = new THREE.Sprite(track(new THREE.SpriteMaterial({ map: glow, color, transparent: true, opacity: 0.55, depthWrite: false, blending: THREE.NormalBlending })));
     halo.scale.set(3, 3, 1);
     const label = labelSprite(a.icon + '  ' + a.title);
     track(label.material.map); track(label.material);
@@ -240,14 +243,14 @@ export function createWorld(canvas, { services, automations, onHover, onSelect }
   {
     helixTube = new THREE.Mesh(
       track(new THREE.TubeGeometry(helixCurve, 300, 0.05, 8, false)),
-      track(new THREE.MeshBasicMaterial({ color: 0x9a7dff, transparent: true, opacity: 0.55 }))
+      track(new THREE.MeshBasicMaterial({ color: 0xb9a6ff, transparent: true, opacity: 0.7 }))
     );
     scene.add(helixTube);
   }
   // Data pulses travelling down the chain.
   const pulses = [];
   for (let i = 0; i < 10; i++) {
-    const s = new THREE.Sprite(track(new THREE.SpriteMaterial({ map: glow, color: i % 2 ? C.pink : C.teal, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending })));
+    const s = new THREE.Sprite(track(new THREE.SpriteMaterial({ map: glow, color: i % 2 ? C.pink : C.teal, transparent: true, depthWrite: false, blending: THREE.NormalBlending })));
     s.scale.set(0.9, 0.9, 1);
     s.userData.offset = i / 10;
     scene.add(s);
@@ -268,7 +271,7 @@ export function createWorld(canvas, { services, automations, onHover, onSelect }
     voice.add(ring);
     waves.push(ring);
   }
-  const voiceGlow = new THREE.Sprite(track(new THREE.SpriteMaterial({ map: glow, color: C.pink, transparent: true, opacity: 0.5, depthWrite: false, blending: THREE.AdditiveBlending })));
+  const voiceGlow = new THREE.Sprite(track(new THREE.SpriteMaterial({ map: glow, color: C.pink, transparent: true, opacity: 0.5, depthWrite: false, blending: THREE.NormalBlending })));
   voiceGlow.scale.set(9, 9, 1);
   voice.add(voiceGlow);
 
@@ -282,7 +285,7 @@ export function createWorld(canvas, { services, automations, onHover, onSelect }
     const w = 2.2 + Math.random() * 2.4;
     const m = new THREE.Mesh(
       track(new THREE.PlaneGeometry(w, 0.9)),
-      track(new THREE.MeshBasicMaterial({ color: left ? 0x223040 : 0x00a884, transparent: true, opacity: 0.9, side: THREE.DoubleSide }))
+      track(new THREE.MeshBasicMaterial({ color: left ? 0xe6e1f7 : C.violet, transparent: true, opacity: 0.9, side: THREE.DoubleSide }))
     );
     m.position.set((left ? -1 : 1) * (1.4 + Math.random() * 1.5), 4 - i * 1.05, (Math.random() - 0.5) * 3);
     m.userData.base = m.position.clone();
@@ -291,58 +294,12 @@ export function createWorld(canvas, { services, automations, onHover, onSelect }
     bubbles.push(m);
   }
 
-  // ---------- one scene at a time ----------
-  // Each station only shows while the camera is at it, so the next scene never
-  // sits in the background of the current one. At the very end everything
-  // fades back in for the pull-out "whole picture" shot.
-  const stationObjects = {
-    network: [network],
-    services: cards,
-    autos: [...orbs, helixTube, ...pulses],
-    voice: [voice],
-    chat: [chat],
-  };
-  const SHOW = {
-    network: [0, 0.27], services: [0.27, 0.49],
-    autos: [0.47, 0.73], voice: [0.71, 0.83], chat: [0.81, 0.93],
-  };
-  const faded = {};
-  Object.entries(stationObjects).forEach(([key, objs]) => {
-    const mats = [];
-    objs.forEach((o) => o.traverse((c) => {
-      if (c.material && !mats.some((m) => m.mat === c.material)) {
-        c.material.transparent = true;
-        // The scene fade multiplies this "base" opacity; animated glows set
-        // the base each frame instead of the opacity, so the two combine.
-        if (c.material.userData.base === undefined) c.material.userData.base = c.material.opacity;
-        mats.push(c.material);
-      }
-    }));
-    faded[key] = { objs, mats };
-  });
-  const weight = ([a, b], p) => {
-    const f = 0.035;
-    const inRange = Math.max(0, Math.min(1, (p - (a - f)) / f, (b + f - p) / f));
-    const finale = THREE.MathUtils.clamp((p - 0.94) / 0.05, 0, 1);
-    return Math.max(inRange, finale);
-  };
-  function applyScenes(p) {
-    Object.entries(faded).forEach(([key, { objs, mats }]) => {
-      const w = weight(SHOW[key], p);
-      objs.forEach((o) => { o.visible = w > 0.005; });
-      mats.forEach((mat) => { mat.opacity = mat.userData.base * w; });
-    });
-  }
-
   // ---------- interaction ----------
   const ray = new THREE.Raycaster();
   const pointer = new THREE.Vector2(9, 9);
   let pointerPx = { x: 0, y: 0 };
   let hovered = null;
-  const pickables = () => [
-    ...cards.filter((c) => c.visible).map((c) => c.children[1]),
-    ...orbs.filter((o) => o.visible).flatMap((o) => [o.userData.orb, o.children[2]]),
-  ];
+  const pickables = () => [...cards.map((c) => c.children[1]), ...orbs.flatMap((o) => [o.userData.orb, o.children[2]])];
 
   const onMove = (e) => {
     pointer.set((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1);
@@ -412,7 +369,7 @@ export function createWorld(canvas, { services, automations, onHover, onSelect }
       const s = 1 + d.hover * 0.1;
       c.scale.set(s, s, s);
       c.rotation.x = Math.sin(t * 0.6 + i) * 0.04 - parallax.y * 0.08 * d.hover;
-      d.halo.material.userData.base = 0.16 + d.hover * 0.5;
+      d.halo.material.opacity = 0.1 + d.hover * 0.3;
     });
 
     // The automation closest to the camera's height is the "current" one.
@@ -434,9 +391,9 @@ export function createWorld(canvas, { services, automations, onHover, onSelect }
       o.children[2].scale.setScalar(1 + d.active * 0.5);
       d.orb.rotation.x = t * 0.4 + i;
       d.orb.rotation.y = t * 0.5;
-      d.halo.material.userData.base = 0.35 + d.hover * 0.4 + d.active * 0.45;
+      d.halo.material.opacity = 0.18 + d.hover * 0.22 + d.active * 0.25;
       d.halo.scale.setScalar(3 + d.active * 2.5);
-      d.label.material.userData.base = 0.55 + Math.max(d.hover, d.active) * 0.45;
+      d.label.material.opacity = 0.55 + Math.max(d.hover, d.active) * 0.45;
     });
     pulses.forEach((p) => {
       const k = (t * 0.07 + p.userData.offset) % 1;
@@ -447,7 +404,7 @@ export function createWorld(canvas, { services, automations, onHover, onSelect }
     waves.forEach((w) => {
       const k = (t * 0.35 + w.userData.offset) % 1;
       w.scale.setScalar(1 + k * 4);
-      w.material.userData.base = (1 - k) * 0.8;
+      w.material.opacity = (1 - k) * 0.8;
       w.lookAt(camera.position);
     });
     bubbles.forEach((b) => {
@@ -455,7 +412,6 @@ export function createWorld(canvas, { services, automations, onHover, onSelect }
       b.lookAt(camera.position);
     });
 
-    applyScenes(progress);
     renderer.render(scene, camera);
     if (!window.__bgReady) {
       // Same signal the old background used: the opening animation waits for
@@ -473,5 +429,24 @@ export function createWorld(canvas, { services, automations, onHover, onSelect }
     renderer.dispose();
   }
 
-  return { update, dispose };
+  // Scroll positions (0-1) the page should come to rest on: each scene, plus
+  // one stop per automation node, found by where the camera passes its height.
+  function checkpoints() {
+    const at = (id) => STATIONS.find((s) => s.id === id).t;
+    const pts = [0, at('leak'), (at('services') + at('services2')) / 2];
+    const p = new THREE.Vector3();
+    orbs.forEach((o) => {
+      let best = 0, bestD = Infinity;
+      for (let q = at('autoTop') - 0.02; q <= at('autoBottom') + 0.02; q += 0.0005) {
+        camCurve.getPoint(along(q), p);
+        const d = Math.abs(p.y - o.position.y);
+        if (d < bestD) { bestD = d; best = q; }
+      }
+      pts.push(best);
+    });
+    pts.push(at('voice'), at('chat'), at('chat2'), 1);
+    return pts;
+  }
+
+  return { update, dispose, checkpoints };
 }

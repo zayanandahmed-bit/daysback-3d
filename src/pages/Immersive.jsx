@@ -5,6 +5,7 @@ import { AUTOMATIONS } from '../components/AutomationLibrary.jsx';
 import LeakCalculator from '../components/LeakCalculator.jsx';
 import VoiceDemo from '../components/VoiceDemo.jsx';
 import LiveChat from '../components/LiveChat.jsx';
+import ChatPlayback from '../immersive/ChatPlayback.jsx';
 
 const SERVICES = [
   {
@@ -40,12 +41,13 @@ const PANELS = {
   leak: [0.155, 0.255],
   services: [0.33, 0.47],
   autos: [0.5, 0.7],
-  voice: [0.735, 0.81],
-  chat: [0.835, 0.91],
+  voice: [0.72, 0.785],
+  demo: [0.8, 0.845],
+  chat: [0.865, 0.915],
   cta: [0.955, 1.01],
 };
 const FADE = 0.025;
-const SCROLL_SCREENS = 12;   // how long the journey is, in screen heights
+const SCROLL_SCREENS = 24;   // how long the journey is, in screen heights
 
 const fadeFor = ([a, b], p) =>
   Math.max(0, Math.min(1, (p - (a - FADE)) / FADE, ((b + FADE) - p) / FADE));
@@ -59,6 +61,8 @@ export default function Immersive() {
   const layerRef = useRef(null);
   const [service, setService] = useState(null);
   const [auto, setAuto] = useState(0);
+  const [stops, setStops] = useState([]);
+  const [demoOn, setDemoOn] = useState(false);
 
   useEffect(() => {
     document.documentElement.classList.add('imm-mode');
@@ -80,7 +84,42 @@ export default function Immersive() {
       },
     });
 
-    let target = 0, current = 0, frame = 0, alive = true;
+    const stopsP = world.checkpoints();
+    setStops(stopsP);
+
+    // When scrolling pauses, glide on to the next stop in the direction you
+    // were going, so the camera comes to rest on a scene (or an automation)
+    // rather than halfway between. It never pulls you backwards, except for
+    // a small nudge if you stopped just past one.
+    let idle = 0, snapping = false, restY = window.scrollY;
+    const stopY = (p) => {
+      const el = spacerRef.current;
+      return el.offsetTop + p * (el.offsetHeight - window.innerHeight);
+    };
+    const settle = () => {
+      const y = window.scrollY;
+      const el = spacerRef.current;
+      const dir = Math.sign(y - restY);
+      restY = y;
+      if (!dir || y > el.offsetTop + el.offsetHeight - window.innerHeight + 4) return;   // no move, or in the footer
+      const ys = stopsP.map(stopY);
+      const ahead = ys.filter((s) => (s - y) * dir > 2).sort((a, b) => (a - b) * dir)[0];
+      const behind = ys.filter((s) => (y - s) * dir >= 0).sort((a, b) => (b - a) * dir)[0];
+      let to = null;
+      if (ahead !== undefined && Math.abs(ahead - y) < window.innerHeight * 0.9) to = ahead;
+      else if (behind !== undefined && Math.abs(y - behind) < window.innerHeight * 0.15) to = behind;
+      if (to === null || Math.abs(to - y) < 2) return;
+      snapping = true;
+      window.scrollTo({ top: to, behavior: 'smooth' });
+      setTimeout(() => { snapping = false; restY = window.scrollY; }, 900);
+    };
+    const onScrollIdle = () => {
+      clearTimeout(idle);
+      if (!snapping) idle = setTimeout(settle, 220);
+    };
+    window.addEventListener('scroll', onScrollIdle, { passive: true });
+
+    let target = 0, current = 0, frame = 0, alive = true, demoShown = false;
     const measure = () => {
       const el = spacerRef.current;
       const max = el.offsetHeight - window.innerHeight;
@@ -106,6 +145,10 @@ export default function Immersive() {
         el.style.visibility = o < 0.01 ? 'hidden' : 'visible';
       });
       if (barRef.current) barRef.current.style.transform = `scaleX(${current})`;
+      // Start the scripted chat when its stop comes into view (state only
+      // changes on the crossing, not every frame).
+      const demoVisible = fadeFor(PANELS.demo, current) > 0.5;
+      if (demoVisible !== demoShown) { demoShown = demoVisible; setDemoOn(demoVisible); }
     };
     // The text panels sit above the 3D canvas and some are big. Scrolling
     // over one must still fly the camera, not scroll the panel or stall, so
@@ -114,7 +157,7 @@ export default function Immersive() {
     const onWheel = (e) => {
       if (e.ctrlKey) return;              // pinch-zoom on trackpads
       e.preventDefault();
-      window.scrollBy({ top: e.deltaMode === 1 ? e.deltaY * 32 : e.deltaY });
+      window.scrollBy({ top: e.deltaMode === 1 ? e.deltaY * 32 : e.deltaY, behavior: 'instant' });
     };
     layer.addEventListener('wheel', onWheel, { passive: false });
     measure();
@@ -125,6 +168,8 @@ export default function Immersive() {
       alive = false;
       cancelAnimationFrame(frame);
       layer.removeEventListener('wheel', onWheel);
+      window.removeEventListener('scroll', onScrollIdle);
+      clearTimeout(idle);
       window.removeEventListener('scroll', measure);
       window.removeEventListener('resize', measure);
       world.dispose();
@@ -200,6 +245,10 @@ export default function Immersive() {
           <VoiceDemo />
         </section>
 
+        <section className="imm-panel imm-side imm-left imm-tall" ref={reg('demo')}>
+          <ChatPlayback playing={demoOn} />
+        </section>
+
         <section className="imm-panel imm-side imm-right imm-tall" ref={reg('chat')}>
           <LiveChat />
         </section>
@@ -231,7 +280,8 @@ export default function Immersive() {
         </div>
       )}
 
-      <div ref={spacerRef} style={{ height: SCROLL_SCREENS * 100 + 'vh' }} aria-hidden="true" />
+      {/* The scroll track: its length sets how slow the flight feels. */}
+      <div ref={spacerRef} className="imm-track" style={{ height: SCROLL_SCREENS * 100 + 'vh' }} data-stops={stops.length} aria-hidden="true" />
     </main>
   );
 }

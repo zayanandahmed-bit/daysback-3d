@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 // Scripted conversations showing what an agent does. They are illustrations,
 // labelled as such on screen, not transcripts of real customers.
-const SCENARIOS = [
+export const SCENARIOS = [
   {
     id: 'clinic',
     tab: 'Dental clinic',
