@@ -56,6 +56,7 @@ export default function Immersive() {
   const panelRefs = useRef({});
   const tipRef = useRef(null);
   const barRef = useRef(null);
+  const layerRef = useRef(null);
   const [service, setService] = useState(null);
   const [auto, setAuto] = useState(0);
 
@@ -106,6 +107,16 @@ export default function Immersive() {
       });
       if (barRef.current) barRef.current.style.transform = `scaleX(${current})`;
     };
+    // The text panels sit above the 3D canvas and some are big. Scrolling
+    // over one must still fly the camera, not scroll the panel or stall, so
+    // wheel turns anywhere on the layer go straight to the page.
+    const layer = layerRef.current;
+    const onWheel = (e) => {
+      if (e.ctrlKey) return;              // pinch-zoom on trackpads
+      e.preventDefault();
+      window.scrollBy({ top: e.deltaMode === 1 ? e.deltaY * 32 : e.deltaY });
+    };
+    layer.addEventListener('wheel', onWheel, { passive: false });
     measure();
     window.addEventListener('scroll', measure, { passive: true });
     window.addEventListener('resize', measure);
@@ -113,6 +124,7 @@ export default function Immersive() {
     return () => {
       alive = false;
       cancelAnimationFrame(frame);
+      layer.removeEventListener('wheel', onWheel);
       window.removeEventListener('scroll', measure);
       window.removeEventListener('resize', measure);
       world.dispose();
@@ -141,7 +153,7 @@ export default function Immersive() {
       <div className="imm-bar"><span ref={barRef} /></div>
       <div className="imm-tip" ref={tipRef} />
 
-      <div className="imm-layer">
+      <div className="imm-layer" ref={layerRef}>
         <section className="imm-panel imm-hero" ref={reg('hero')}>
           <p className="eyebrow">AI Automation Studio</p>
           <h1>We find where your business leaks money and wastes days, then we build the AI that fixes it and <span className="grad">gets your days back</span></h1>

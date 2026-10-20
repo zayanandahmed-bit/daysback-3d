@@ -187,25 +187,6 @@ export function createWorld(canvas, { services, automations, onHover, onSelect }
     network.add(new THREE.LineSegments(lg, lm));
   }
 
-  // ---------- leak: money draining out of the business ----------
-  const LEAK = small ? 320 : 700;
-  const leakGeom = track(new THREE.BufferGeometry());
-  const leakPos = new Float32Array(LEAK * 3);
-  const leakVel = [];
-  const resetLeak = (i) => {
-    const d = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize();
-    leakVel[i] = d.multiplyScalar(0.012 + Math.random() * 0.03);
-    leakPos.set([d.x * 0.5, d.y * 0.5, d.z * 0.5 - 2], i * 3);
-  };
-  for (let i = 0; i < LEAK; i++) {
-    resetLeak(i);
-    const k = Math.random() * 160;
-    leakPos[i * 3] += leakVel[i].x * k; leakPos[i * 3 + 1] += leakVel[i].y * k; leakPos[i * 3 + 2] += leakVel[i].z * k;
-  }
-  leakGeom.setAttribute('position', new THREE.BufferAttribute(leakPos, 3));
-  const leakMat = track(new THREE.PointsMaterial({ color: C.sun, size: 0.12, map: glow, transparent: true, opacity: 0.9, depthWrite: false, blending: THREE.AdditiveBlending }));
-  scene.add(new THREE.Points(leakGeom, leakMat));
-
   // ---------- services: floating cards ----------
   const cards = [];
   services.forEach((s, i) => {
@@ -255,12 +236,13 @@ export function createWorld(canvas, { services, automations, onHover, onSelect }
     orbs.push(g);
   });
   const helixCurve = new THREE.CatmullRomCurve3(helixPts);
+  let helixTube;
   {
-    const tube = new THREE.Mesh(
+    helixTube = new THREE.Mesh(
       track(new THREE.TubeGeometry(helixCurve, 300, 0.05, 8, false)),
       track(new THREE.MeshBasicMaterial({ color: 0x9a7dff, transparent: true, opacity: 0.55 }))
     );
-    scene.add(tube);
+    scene.add(helixTube);
   }
   // Data pulses travelling down the chain.
   const pulses = [];
@@ -309,12 +291,58 @@ export function createWorld(canvas, { services, automations, onHover, onSelect }
     bubbles.push(m);
   }
 
+  // ---------- one scene at a time ----------
+  // Each station only shows while the camera is at it, so the next scene never
+  // sits in the background of the current one. At the very end everything
+  // fades back in for the pull-out "whole picture" shot.
+  const stationObjects = {
+    network: [network],
+    services: cards,
+    autos: [...orbs, helixTube, ...pulses],
+    voice: [voice],
+    chat: [chat],
+  };
+  const SHOW = {
+    network: [0, 0.27], services: [0.27, 0.49],
+    autos: [0.47, 0.73], voice: [0.71, 0.83], chat: [0.81, 0.93],
+  };
+  const faded = {};
+  Object.entries(stationObjects).forEach(([key, objs]) => {
+    const mats = [];
+    objs.forEach((o) => o.traverse((c) => {
+      if (c.material && !mats.some((m) => m.mat === c.material)) {
+        c.material.transparent = true;
+        // The scene fade multiplies this "base" opacity; animated glows set
+        // the base each frame instead of the opacity, so the two combine.
+        if (c.material.userData.base === undefined) c.material.userData.base = c.material.opacity;
+        mats.push(c.material);
+      }
+    }));
+    faded[key] = { objs, mats };
+  });
+  const weight = ([a, b], p) => {
+    const f = 0.035;
+    const inRange = Math.max(0, Math.min(1, (p - (a - f)) / f, (b + f - p) / f));
+    const finale = THREE.MathUtils.clamp((p - 0.94) / 0.05, 0, 1);
+    return Math.max(inRange, finale);
+  };
+  function applyScenes(p) {
+    Object.entries(faded).forEach(([key, { objs, mats }]) => {
+      const w = weight(SHOW[key], p);
+      objs.forEach((o) => { o.visible = w > 0.005; });
+      mats.forEach((mat) => { mat.opacity = mat.userData.base * w; });
+    });
+  }
+
   // ---------- interaction ----------
   const ray = new THREE.Raycaster();
   const pointer = new THREE.Vector2(9, 9);
   let pointerPx = { x: 0, y: 0 };
   let hovered = null;
-  const pickables = () => [...cards.map((c) => c.children[1]), ...orbs.flatMap((o) => [o.userData.orb, o.children[2]])];
+  const pickables = () => [
+    ...cards.filter((c) => c.visible).map((c) => c.children[1]),
+    ...orbs.filter((o) => o.visible).flatMap((o) => [o.userData.orb, o.children[2]]),
+  ];
 
   const onMove = (e) => {
     pointer.set((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1);
@@ -364,15 +392,6 @@ export function createWorld(canvas, { services, automations, onHover, onSelect }
     network.rotation.y = t * 0.06;
     network.rotation.x = Math.sin(t * 0.1) * 0.08;
 
-    // Leak particles stream outwards.
-    for (let i = 0; i < LEAK; i++) {
-      leakPos[i * 3] += leakVel[i].x; leakPos[i * 3 + 1] += leakVel[i].y; leakPos[i * 3 + 2] += leakVel[i].z;
-      const dx = leakPos[i * 3], dy = leakPos[i * 3 + 1], dz = leakPos[i * 3 + 2] + 2;
-      if (dx * dx + dy * dy + dz * dz > 64) resetLeak(i);
-    }
-    leakGeom.attributes.position.needsUpdate = true;
-    leakMat.opacity = THREE.MathUtils.clamp(1 - Math.abs(progress - 0.2) / 0.16, 0.08, 0.95);
-
     // Hover picking.
     ray.setFromCamera(pointer, camera);
     const hit = pointer.x > 2 ? null : ray.intersectObjects(pickables(), false)[0];
@@ -393,7 +412,7 @@ export function createWorld(canvas, { services, automations, onHover, onSelect }
       const s = 1 + d.hover * 0.1;
       c.scale.set(s, s, s);
       c.rotation.x = Math.sin(t * 0.6 + i) * 0.04 - parallax.y * 0.08 * d.hover;
-      d.halo.material.opacity = 0.16 + d.hover * 0.5;
+      d.halo.material.userData.base = 0.16 + d.hover * 0.5;
     });
 
     // The automation closest to the camera's height is the "current" one.
@@ -415,9 +434,9 @@ export function createWorld(canvas, { services, automations, onHover, onSelect }
       o.children[2].scale.setScalar(1 + d.active * 0.5);
       d.orb.rotation.x = t * 0.4 + i;
       d.orb.rotation.y = t * 0.5;
-      d.halo.material.opacity = 0.35 + d.hover * 0.4 + d.active * 0.45;
+      d.halo.material.userData.base = 0.35 + d.hover * 0.4 + d.active * 0.45;
       d.halo.scale.setScalar(3 + d.active * 2.5);
-      d.label.material.opacity = 0.55 + Math.max(d.hover, d.active) * 0.45;
+      d.label.material.userData.base = 0.55 + Math.max(d.hover, d.active) * 0.45;
     });
     pulses.forEach((p) => {
       const k = (t * 0.07 + p.userData.offset) % 1;
@@ -428,7 +447,7 @@ export function createWorld(canvas, { services, automations, onHover, onSelect }
     waves.forEach((w) => {
       const k = (t * 0.35 + w.userData.offset) % 1;
       w.scale.setScalar(1 + k * 4);
-      w.material.opacity = (1 - k) * 0.8;
+      w.material.userData.base = (1 - k) * 0.8;
       w.lookAt(camera.position);
     });
     bubbles.forEach((b) => {
@@ -436,6 +455,7 @@ export function createWorld(canvas, { services, automations, onHover, onSelect }
       b.lookAt(camera.position);
     });
 
+    applyScenes(progress);
     renderer.render(scene, camera);
     if (!window.__bgReady) {
       // Same signal the old background used: the opening animation waits for

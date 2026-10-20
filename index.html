@@ -10,6 +10,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
+<script>
+  // Homepage is the 3D world: go dark before the first paint, no light flash.
+  if (/\/daysback-3d\/?(index\.html)?$/.test(location.pathname)) document.documentElement.classList.add('imm-mode');
+</script>
 <div id="root"></div>
 <script type="module" src="/src/main.jsx"></script>
 </body>

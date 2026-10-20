@@ -1137,8 +1137,7 @@ html.imm-mode, html.imm-mode body { background: #0b0820; }
 .imm-ghost { color: #fff !important; border-color: rgba(255,255,255,0.35) !important; background: rgba(255,255,255,0.06) !important; }
 
 .imm-wide, .imm-side {
-  max-height: calc(100vh - 110px); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin;
-  background: rgba(14,10,40,0.62); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+  background: rgba(14,10,40,0.78); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
   border: 1px solid rgba(185,166,255,0.18); border-radius: 26px; box-shadow: 0 30px 90px rgba(0,0,0,0.45);
 }
 .imm-wide { left: 50%; top: 88px; width: min(1080px, 94vw); margin-left: calc(min(1080px, 94vw) / -2); padding: 1.6rem; }
@@ -1189,10 +1188,25 @@ html.imm-mode, html.imm-mode body { background: #0b0820; }
   .imm-mode .nav { backdrop-filter: none; -webkit-backdrop-filter: none; background: rgba(11,8,32,0.92); }
   .imm-side, .imm-tall {
     left: 3vw !important; right: 3vw !important; width: auto; top: auto; bottom: 12px; transform: translateY(var(--imm-y, 0px));
-    max-height: 60vh; padding: 1.1rem;
+    padding: 1.1rem;
   }
   .imm-hero { margin-top: -10rem; }
-  .imm-wide { top: 76px; padding: 1rem; max-height: calc(100vh - 90px); }
+  .imm-wide { top: 70px; padding: 0.9rem; }
+  /* the calculator is the tallest panel; trim it so it fits a phone screen
+     without needing its own scrollbar */
+  .imm-wide .section-head .sub, .imm-wide .leak-note, .imm-wide .leak-split { display: none; }
+  .imm-wide .section-head { margin-bottom: 0.7rem; }
+  .imm-wide .leak { gap: 0.8rem; }
+  .imm-wide .leak-inputs { padding: 1rem; gap: 0.9rem; }
+  .imm-wide .leak-result { padding: 1.1rem; gap: 0.5rem; }
+  .imm-wide .leak-big { font-size: 2.4rem; }
+  .imm-auto .lib-facts div:last-child { display: none; }
   .imm-tall .phone-live .phone-chat { height: 34vh; min-height: 0; }
   .imm-tall .call-lines { height: 26vh; min-height: 0; }
 }
+
+/* Dark opening animation on the 3D homepage, so it flows straight into the
+   scene instead of flashing a light page first. */
+html.imm-mode .intro { background: #0b0820; }
+html.imm-mode .intro-mark { color: #f3f0ff; }
+html.imm-mode .intro::after { background: linear-gradient(to bottom, rgba(108,60,255,0.25), transparent); }
