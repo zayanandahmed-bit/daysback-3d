@@ -47,7 +47,7 @@ const PANELS = {
   cta: [0.955, 1.01],
 };
 const FADE = 0.025;
-const SCROLL_SCREENS = 24;   // how long the journey is, in screen heights
+const SCROLL_SCREENS = 30;   // how long the journey is, in screen heights
 
 const fadeFor = ([a, b], p) =>
   Math.max(0, Math.min(1, (p - (a - FADE)) / FADE, ((b + FADE) - p) / FADE));
@@ -61,8 +61,8 @@ export default function Immersive() {
   const layerRef = useRef(null);
   const [service, setService] = useState(null);
   const [auto, setAuto] = useState(0);
-  const [stops, setStops] = useState([]);
-  const [demoOn, setDemoOn] = useState(false);
+  const [demoStep, setDemoStep] = useState(0);
+  const rawForStopRef = useRef(() => 0);
 
   useEffect(() => {
     document.documentElement.classList.add('imm-mode');
@@ -84,42 +84,38 @@ export default function Immersive() {
       },
     });
 
-    const stopsP = world.checkpoints();
-    setStops(stopsP);
+    // Scroll is mapped onto the journey with a pause at every checkpoint:
+    // each stop gets its own stretch of scroll where the camera holds still,
+    // and between stops the camera eases out and back in. So it comes to rest
+    // on every scene and automation without the page ever moving by itself.
+    const HOLD = { hero: 0.8, leak: 1.6, services: 1.6, voice: 1.6, chat: 4.2, chat2: 1.6, out: 1.2 };
+    const TRAVEL = 30;                          // scroll units per whole journey of movement
+    const stopsList = world.checkpoints();
+    const knots = [];
+    let acc = 0;
+    stopsList.forEach((st, i) => {
+      const hold = HOLD[st.id] ?? 0.65;         // each automation node gets a short pause
+      knots.push({ ...st, a: acc, b: acc + hold });
+      acc += hold;
+      if (i < stopsList.length - 1) acc += (stopsList[i + 1].p - st.p) * TRAVEL;
+    });
+    knots.forEach((k) => { k.a /= acc; k.b /= acc; });
+    const toJourney = (r) => {
+      for (let i = 0; i < knots.length; i++) {
+        const k = knots[i];
+        if (r <= k.b) {
+          if (r >= k.a || i === 0) return k.p;
+          const prev = knots[i - 1];
+          const u = (r - prev.b) / (k.a - prev.b);
+          return prev.p + (k.p - prev.p) * (u * u * (3 - 2 * u));
+        }
+      }
+      return 1;
+    };
+    const demoKnot = knots.find((k) => k.id === 'chat');
+    rawForStopRef.current = (id) => { const k = knots.find((x) => x.id === id); return k ? (k.a + k.b) / 2 : 0; };
 
-    // When scrolling pauses, glide on to the next stop in the direction you
-    // were going, so the camera comes to rest on a scene (or an automation)
-    // rather than halfway between. It never pulls you backwards, except for
-    // a small nudge if you stopped just past one.
-    let idle = 0, snapping = false, restY = window.scrollY;
-    const stopY = (p) => {
-      const el = spacerRef.current;
-      return el.offsetTop + p * (el.offsetHeight - window.innerHeight);
-    };
-    const settle = () => {
-      const y = window.scrollY;
-      const el = spacerRef.current;
-      const dir = Math.sign(y - restY);
-      restY = y;
-      if (!dir || y > el.offsetTop + el.offsetHeight - window.innerHeight + 4) return;   // no move, or in the footer
-      const ys = stopsP.map(stopY);
-      const ahead = ys.filter((s) => (s - y) * dir > 2).sort((a, b) => (a - b) * dir)[0];
-      const behind = ys.filter((s) => (y - s) * dir >= 0).sort((a, b) => (b - a) * dir)[0];
-      let to = null;
-      if (ahead !== undefined && Math.abs(ahead - y) < window.innerHeight * 0.9) to = ahead;
-      else if (behind !== undefined && Math.abs(y - behind) < window.innerHeight * 0.15) to = behind;
-      if (to === null || Math.abs(to - y) < 2) return;
-      snapping = true;
-      window.scrollTo({ top: to, behavior: 'smooth' });
-      setTimeout(() => { snapping = false; restY = window.scrollY; }, 900);
-    };
-    const onScrollIdle = () => {
-      clearTimeout(idle);
-      if (!snapping) idle = setTimeout(settle, 220);
-    };
-    window.addEventListener('scroll', onScrollIdle, { passive: true });
-
-    let target = 0, current = 0, frame = 0, alive = true, demoShown = false;
+    let target = 0, current = 0, frame = 0, alive = true, lastT = performance.now(), lastDemo = -1;
     const measure = () => {
       const el = spacerRef.current;
       const max = el.offsetHeight - window.innerHeight;
@@ -130,14 +126,19 @@ export default function Immersive() {
       frame = requestAnimationFrame(loop);
       if (document.hidden) return;
       // Ease towards the scroll position so the camera glides instead of
-      // jumping with every notch of the wheel.
-      current += (target - current) * 0.075;
-      if (Math.abs(target - current) < 0.00005) current = target;
-      world.update(current);
+      // jumping with every notch of the wheel. Time-based, so it feels the
+      // same on 60 Hz and 120 Hz screens.
+      const now = performance.now();
+      const dt = Math.min(0.05, (now - lastT) / 1000);
+      lastT = now;
+      current += (target - current) * (1 - Math.exp(-dt * 5.5));
+      if (Math.abs(target - current) < 0.00002) current = target;
+      const journey = toJourney(current);
+      world.update(journey);
       Object.entries(PANELS).forEach(([key, range]) => {
         const el = panelRefs.current[key];
         if (!el) return;
-        const o = fadeFor(range, current);
+        const o = fadeFor(range, journey);
         el.style.opacity = o.toFixed(3);
         // Offset via a variable: some panels also centre themselves with transform.
         el.style.setProperty('--imm-y', ((1 - o) * 26).toFixed(1) + 'px');
@@ -145,10 +146,13 @@ export default function Immersive() {
         el.style.visibility = o < 0.01 ? 'hidden' : 'visible';
       });
       if (barRef.current) barRef.current.style.transform = `scaleX(${current})`;
-      // Start the scripted chat when its stop comes into view (state only
-      // changes on the crossing, not every frame).
-      const demoVisible = fadeFor(PANELS.demo, current) > 0.5;
-      if (demoVisible !== demoShown) { demoShown = demoVisible; setDemoOn(demoVisible); }
+      // The scripted chat plays as you scroll through its stop: one message
+      // per step. State only changes when the step does, not every frame.
+      if (demoKnot) {
+        const step = Math.max(0, Math.min(1, (current - demoKnot.a) / (demoKnot.b - demoKnot.a)));
+        const q = Math.round(step * 200) / 200;
+        if (q !== lastDemo) { lastDemo = q; setDemoStep(q); }
+      }
     };
     // The text panels sit above the 3D canvas and some are big. Scrolling
     // over one must still fly the camera, not scroll the panel or stall, so
@@ -168,8 +172,6 @@ export default function Immersive() {
       alive = false;
       cancelAnimationFrame(frame);
       layer.removeEventListener('wheel', onWheel);
-      window.removeEventListener('scroll', onScrollIdle);
-      clearTimeout(idle);
       window.removeEventListener('scroll', measure);
       window.removeEventListener('resize', measure);
       world.dispose();
@@ -184,9 +186,10 @@ export default function Immersive() {
     return () => window.removeEventListener('keydown', onKey);
   }, [service]);
 
-  const jump = (p) => {
+  const jump = (stopId) => {
     const el = spacerRef.current;
-    window.scrollTo({ top: el.offsetTop + p * (el.offsetHeight - window.innerHeight), behavior: 'smooth' });
+    const r = rawForStopRef.current(stopId);
+    window.scrollTo({ top: el.offsetTop + r * (el.offsetHeight - window.innerHeight), behavior: 'smooth' });
   };
 
   const a = AUTOMATIONS[auto];
@@ -204,7 +207,7 @@ export default function Immersive() {
           <h1>We find where your business leaks money and wastes days, then we build the AI that fixes it and <span className="grad">gets your days back</span></h1>
           <p className="imm-sub">Scroll to fly through what we do. Hover and click anything that glows.</p>
           <div className="hero-actions">
-            <button type="button" className="btn btn-primary" onClick={() => jump(PANELS.leak[0] + 0.03)}>Start the tour ↓</button>
+            <button type="button" className="btn btn-primary" onClick={() => jump('leak')}>Start the tour ↓</button>
             <Link to="/contact" className="btn btn-ghost imm-ghost">Book a Free Strategy Call</Link>
           </div>
         </section>
@@ -246,7 +249,7 @@ export default function Immersive() {
         </section>
 
         <section className="imm-panel imm-side imm-left imm-tall" ref={reg('demo')}>
-          <ChatPlayback playing={demoOn} />
+          <ChatPlayback step={demoStep} />
         </section>
 
         <section className="imm-panel imm-side imm-right imm-tall" ref={reg('chat')}>
@@ -281,7 +284,7 @@ export default function Immersive() {
       )}
 
       {/* The scroll track: its length sets how slow the flight feels. */}
-      <div ref={spacerRef} className="imm-track" style={{ height: SCROLL_SCREENS * 100 + 'vh' }} data-stops={stops.length} aria-hidden="true" />
+      <div ref={spacerRef} className="imm-track" style={{ height: SCROLL_SCREENS * 100 + 'vh' }} aria-hidden="true" />
     </main>
   );
 }

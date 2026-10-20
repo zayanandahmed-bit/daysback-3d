@@ -301,7 +301,9 @@ export function createWorld(canvas, { services, automations, onHover, onSelect }
   let hovered = null;
   const pickables = () => [...cards.map((c) => c.children[1]), ...orbs.flatMap((o) => [o.userData.orb, o.children[2]])];
 
+  let pointerMoved = false, frameNo = 0;
   const onMove = (e) => {
+    pointerMoved = true;
     pointer.set((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1);
     pointerPx = { x: e.clientX, y: e.clientY };
   };
@@ -349,10 +351,16 @@ export function createWorld(canvas, { services, automations, onHover, onSelect }
     network.rotation.y = t * 0.06;
     network.rotation.x = Math.sin(t * 0.1) * 0.08;
 
-    // Hover picking.
-    ray.setFromCamera(pointer, camera);
-    const hit = pointer.x > 2 ? null : ray.intersectObjects(pickables(), false)[0];
-    const now = hit ? hit.object.userData : null;
+    // Hover picking: only when the pointer moved, or every few frames while
+    // the camera does, rather than raycasting the whole scene every frame.
+    frameNo++;
+    let now = hovered;
+    if (pointerMoved || frameNo % 6 === 0) {
+      pointerMoved = false;
+      ray.setFromCamera(pointer, camera);
+      const hit = pointer.x > 2 ? null : ray.intersectObjects(pickables(), false)[0];
+      now = hit ? hit.object.userData : null;
+    }
     if (now !== hovered) {
       hovered = now;
       canvas.style.cursor = hovered ? 'pointer' : '';
@@ -433,19 +441,23 @@ export function createWorld(canvas, { services, automations, onHover, onSelect }
   // one stop per automation node, found by where the camera passes its height.
   function checkpoints() {
     const at = (id) => STATIONS.find((s) => s.id === id).t;
-    const pts = [0, at('leak'), (at('services') + at('services2')) / 2];
+    const pts = [
+      { id: 'hero', p: 0 },
+      { id: 'leak', p: at('leak') },
+      { id: 'services', p: (at('services') + at('services2')) / 2 },
+    ];
     const p = new THREE.Vector3();
-    orbs.forEach((o) => {
+    orbs.forEach((o, i) => {
       let best = 0, bestD = Infinity;
       for (let q = at('autoTop') - 0.02; q <= at('autoBottom') + 0.02; q += 0.0005) {
         camCurve.getPoint(along(q), p);
         const d = Math.abs(p.y - o.position.y);
         if (d < bestD) { bestD = d; best = q; }
       }
-      pts.push(best);
+      pts.push({ id: 'auto' + i, p: best });
     });
-    pts.push(at('voice'), at('chat'), at('chat2'), 1);
-    return pts;
+    pts.push({ id: 'voice', p: at('voice') }, { id: 'chat', p: at('chat') }, { id: 'chat2', p: at('chat2') }, { id: 'out', p: 1 });
+    return pts.sort((a, b) => a.p - b.p);
   }
 
   return { update, dispose, checkpoints };

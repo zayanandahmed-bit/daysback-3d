@@ -1129,7 +1129,9 @@ html:not(.intro-done) .scroll-hint { opacity: 0; }
 .imm-ghost { background: rgba(255,255,255,0.85) !important; }
 
 .imm-wide, .imm-side {
-  background: rgba(255,255,255,0.78); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+  /* solid rather than a live blur: blurring a moving 3D scene every frame
+     is the single most expensive thing the page could do */
+  background: rgba(255,255,255,0.93);
   border: 1px solid var(--line); border-radius: 26px; box-shadow: 0 30px 80px rgba(108,60,255,0.16);
 }
 .imm-wide { left: 50%; top: 88px; width: min(1080px, 94vw); margin-left: calc(min(1080px, 94vw) / -2); padding: 1.6rem; }
