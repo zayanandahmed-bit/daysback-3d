@@ -150,6 +150,15 @@ export default function Immersive() {
         el.style.visibility = o < 0.01 ? 'hidden' : 'visible';
       });
       if (barRef.current) barRef.current.style.transform = `scaleX(${current})`;
+      // When the footer scrolls up into view, push the closing box up with
+      // it so the footer never slides over the bottom of the box.
+      const cta = panelRefs.current.cta;
+      const foot = document.querySelector('.footer');
+      if (cta && foot) {
+        cta.style.setProperty('--imm-push', '0px');
+        const overlap = cta.getBoundingClientRect().bottom + 32 - foot.getBoundingClientRect().top;
+        cta.style.setProperty('--imm-push', (overlap > 0 ? -overlap : 0).toFixed(1) + 'px');
+      }
       if (coverRef.current) {
         // Plain page on the opening screen, and again at the closing
         // call-to-action, so nothing from the 3D world sits behind either.
@@ -291,7 +300,7 @@ export default function Immersive() {
           <p className="imm-sub">Somewhere in your business, time and money are slipping away, and you're probably too close to see it. At DaysBack, we look at how you actually operate, find the gaps, and build bespoke AI solutions around them so that you focus on growth while our solutions do the heavy-lifting for you.</p>
           <div className="hero-actions">
             <button type="button" className="btn btn-primary" onClick={() => jump('leak')}>Start the tour ↓</button>
-            <Link to="/contact" className="btn btn-ghost imm-ghost">Book a Free Strategy Call</Link>
+            <Link to="/contact" className="btn btn-ghost imm-ghost">Let's Map Your Opportunities</Link>
           </div>
         </section>
 
@@ -357,7 +366,7 @@ export default function Immersive() {
             <p>{SERVICES[service].body}</p>
             <ul>{SERVICES[service].points.map((p) => <li key={p}>{p}</li>)}</ul>
             <div className="hero-actions">
-              <Link to="/contact" className="btn btn-primary">Build this for my business</Link>
+              <Link to="/contact" className="btn btn-primary">Let's Map Your Opportunities</Link>
               <button type="button" className="btn btn-ghost" onClick={() => setService((service + 1) % SERVICES.length)}>Next →</button>
             </div>
           </div>

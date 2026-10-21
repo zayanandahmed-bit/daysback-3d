@@ -140,7 +140,7 @@ export default function AutomationLibrary() {
             <div><span>What you get</span>{open.saves}</div>
             <div><span>Why it's hard to DIY</span>{open.hard}</div>
           </div>
-          <Link to="/contact" className="btn btn-primary">Build this for my business</Link>
+          <Link to="/contact" className="btn btn-primary">Let's Map Your Opportunities</Link>
         </div>
       </div>
     </section>

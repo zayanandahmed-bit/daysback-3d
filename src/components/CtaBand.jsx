@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 
-export default function CtaBand({ heading, children, button = 'Book a Free Strategy Call' }) {
+export default function CtaBand({ heading, children, button = "Let's Map Your Opportunities" }) {
   return (
     <section className="section">
       <div className="cta-band">

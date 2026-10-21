@@ -1,70 +1,52 @@
+import { Link } from 'react-router-dom';
 import Faq from '../components/Faq.jsx';
 import CtaBand from '../components/CtaBand.jsx';
+import AutomationLibrary from '../components/AutomationLibrary.jsx';
+import VoiceDemo from '../components/VoiceDemo.jsx';
+import LiveChat from '../components/LiveChat.jsx';
+import Timeline from '../components/Timeline.jsx';
 
-const SERVICES = [
+const CORE = [
   {
-    icon: '◆',
-    iconStyle: undefined,
-    title: 'Custom AI Agents',
-    body: 'Purpose-built agents trained on your data, tone, and rules, deployed wherever your work happens.',
-    points: [
-      'Sales agents that qualify and nurture leads automatically',
-      'Research agents that gather and summarize market intel',
-      'Scheduling agents that manage calendars end-to-end',
-    ],
+    n: '01', icon: '◆', title: 'Custom AI Agents', tone: 'violet',
+    body: 'Agents trained on your data, tone and rules that handle sales, support, scheduling or research, inside the tools you already use.',
+    points: ['Qualify and nurture every lead automatically', 'Research and summarise market intel on demand', 'Run calendars end to end, no back-and-forth'],
+    tags: ['Sales', 'Support', 'Scheduling', 'Research'],
   },
   {
-    icon: '▲',
-    iconStyle: { background: 'linear-gradient(135deg,#ff3d8a,#ffb020)' },
-    title: 'Workflow Automation',
-    body: 'We connect your CRM, inbox, calendar, and spreadsheets into automations that eliminate repetitive work.',
-    points: [
-      'Automatic lead capture, enrichment, and routing',
-      'Invoice, quote, and document generation',
-      'Cross-tool syncing so data is never entered twice',
-    ],
+    n: '02', icon: '▲', title: 'Workflow Automation', tone: 'pink',
+    body: 'Your CRM, inbox, calendar and spreadsheets wired together so repetitive work happens by itself, accurately, every time.',
+    points: ['Lead capture, enrichment and routing', 'Quotes, invoices and documents generated for you', 'Data entered once, synced everywhere'],
+    tags: ['CRM', 'Invoices', 'Quotes', 'Data sync'],
   },
   {
-    icon: '●',
-    iconStyle: { background: 'linear-gradient(135deg,#00b8a0,#6c3cff)' },
-    title: 'Voice & Chat Agents',
-    body: '24/7 AI receptionists and support bots that talk to your customers like your best employee would.',
-    points: [
-      'Phone agents that answer, qualify, and book appointments',
-      'Website chatbots trained on your products and FAQs',
-      'WhatsApp & SMS follow-up sequences that convert',
-    ],
+    n: '03', icon: '●', title: 'Voice & Chat Agents', tone: 'teal',
+    body: '24/7 receptionists that answer calls and messages like your best employee: qualifying, booking and following up while you sleep.',
+    points: ['Phone agents that answer, qualify and book', 'Website and WhatsApp chat trained on your business', 'SMS and WhatsApp follow-ups that convert'],
+    tags: ['Phone', 'WhatsApp', 'Website chat', 'SMS'],
   },
   {
-    icon: '■',
-    iconStyle: { background: 'linear-gradient(135deg,#ffb020,#ff3d8a)' },
-    title: 'Internal Ops Copilots',
-    body: 'Internal tools that act on your business data automatically: reporting, summaries, and alerts without lifting a finger.',
-    points: [
-      'Daily/weekly performance reports generated automatically',
-      'Inbox triage and priority alerts for your team',
-      'Data dashboards that update and explain themselves',
-    ],
+    n: '04', icon: '■', title: 'Internal Ops Copilots', tone: 'sun',
+    body: 'Tools that read your business data and act on it: reports written for you, inboxes triaged, dashboards that explain what changed.',
+    points: ['Daily and weekly reports, written automatically', 'Inbox triage and priority alerts', 'Dashboards that update and explain themselves'],
+    tags: ['Reporting', 'Inbox', 'Dashboards', 'Alerts'],
   },
 ];
 
+const ALSO = [
+  { icon: '💬', title: 'AI website assistant', body: 'A chat on your site that answers questions about your business and books calls, like the one further down this page.' },
+  { icon: '📞', title: 'AI voice receptionist', body: 'Picks up every call, day or night, in a natural voice, and books straight into your calendar.' },
+  { icon: '📲', title: 'Call systems', body: 'Browser calling for your team with call logs, recordings and inbound calls that ring whoever is free.' },
+  { icon: '🎯', title: 'Lead finding & follow-up', body: 'Systems that find businesses that fit, rank them, and follow up so your pipeline never runs dry.' },
+  { icon: '📊', title: 'Custom dashboards & CRMs', body: 'One screen for your leads, clients, payments and calls, built around how you actually work.' },
+  { icon: '🌐', title: 'Websites that sell', body: 'Fast, interactive sites with the calculators, demos and AI chat that turn visitors into calls.' },
+];
+
 const FAQS = [
-  {
-    q: 'How long does it take to build an AI agent?',
-    a: "Most projects go from first call to deployed agent in under 5 working business days, depending on how many tools we're integrating.",
-  },
-  {
-    q: 'Do I need technical knowledge to use it?',
-    a: 'No, we build everything, connect it to the tools you already use, and hand it over working. You just watch the results.',
-  },
-  {
-    q: 'What tools can you integrate with?',
-    a: 'Pretty much anything with an API: Gmail, Outlook, HubSpot, Salesforce, Notion, Slack, WhatsApp, Google Sheets, Stripe, Calendly, and hundreds more.',
-  },
-  {
-    q: 'What does it cost?',
-    a: "Every build is custom, so pricing depends on scope. Book a free call and we'll give you a clear quote after the audit. No surprises.",
-  },
+  { q: 'How long does it take to build an AI agent?', a: "Most projects go from first call to deployed agent in under 5 working business days, depending on how many tools we're integrating." },
+  { q: 'Do I need technical knowledge to use it?', a: 'No, we build everything, connect it to the tools you already use, and hand it over working. You just watch the results.' },
+  { q: 'What tools can you integrate with?', a: 'Pretty much anything with an API: Gmail, Outlook, HubSpot, Salesforce, Notion, Slack, WhatsApp, Google Sheets, Stripe, Calendly, and hundreds more.' },
+  { q: 'What does it cost?', a: "Every build is custom, so pricing depends on scope. Book a free call and we'll give you a clear quote after the audit. No surprises." },
 ];
 
 export default function Services() {
@@ -78,27 +60,67 @@ export default function Services() {
         <p className="hero-sub">
           Every system is custom-built around your workflows, your tools, and your customers.
         </p>
+        <div className="hero-actions svc-hero-actions">
+          <Link to="/contact" className="btn btn-primary">Let's Map Your Opportunities</Link>
+          <a href="#talk" className="btn btn-ghost" onClick={(e) => {
+            e.preventDefault();
+            document.getElementById('talk')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }}>Talk to our AI ↓</a>
+        </div>
       </section>
 
-      <section className="section">
-        <div className="detail-rows">
-          {SERVICES.map((service) => (
-            <div className="detail-row" key={service.title}>
-              <div className="card-icon" style={service.iconStyle}>
-                {service.icon}
+      <section className="section" style={{ paddingTop: '2rem' }}>
+        <div className="svc-grid">
+          {CORE.map((s) => (
+            <article className={'card svc-card tone-' + s.tone} data-tilt key={s.title}>
+              <div className="svc-top">
+                <span className="svc-icon">{s.icon}</span>
+                <span className="svc-n">{s.n}</span>
               </div>
+              <h3>{s.title}</h3>
+              <p className="svc-body">{s.body}</p>
+              <ul className="svc-points">
+                {s.points.map((p) => <li key={p}>{p}</li>)}
+              </ul>
+              <div className="svc-tags">
+                {s.tags.map((t) => <span key={t}>{t}</span>)}
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="section" style={{ paddingTop: 0 }}>
+        <div className="section-head">
+          <p className="eyebrow">Also part of what we do</p>
+          <h2>The pieces that tie it all together</h2>
+        </div>
+        <div className="also-grid">
+          {ALSO.map((a) => (
+            <div className="card also-card" key={a.title}>
+              <span className="also-icon">{a.icon}</span>
               <div>
-                <h3>{service.title}</h3>
-                <p>{service.body}</p>
-                <ul>
-                  {service.points.map((point) => (
-                    <li key={point}>{point}</li>
-                  ))}
-                </ul>
+                <h3>{a.title}</h3>
+                <p>{a.body}</p>
               </div>
             </div>
           ))}
         </div>
+      </section>
+
+      <AutomationLibrary />
+
+      <VoiceDemo />
+
+      <LiveChat />
+
+      <section className="section process">
+        <div className="section-head">
+          <p className="eyebrow">How it works</p>
+          <h2>From idea to deployed agent in under 5 business days</h2>
+          <p className="sub">A clear, proven process, so you always know what's happening and what comes next.</p>
+        </div>
+        <Timeline />
       </section>
 
       <section className="section">
@@ -110,8 +132,7 @@ export default function Services() {
       </section>
 
       <CtaBand heading="Not sure which service fits?">
-        Book a free audit call: we'll map your workflows and tell you exactly what to automate
-        first.
+        Book a free audit call: we'll map your workflows and tell you exactly what to automate first.
       </CtaBand>
     </main>
   );

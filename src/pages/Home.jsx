@@ -124,7 +124,7 @@ export default function Home() {
           </p>
           <div className="hero-actions">
             <Link to="/contact" className="btn btn-primary">
-              Book a Free Strategy Call
+              Let's Map Your Opportunities
             </Link>
             <a href="#talk" className="btn btn-ghost" onClick={(e) => {
               e.preventDefault();

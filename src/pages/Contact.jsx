@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import ChatPlayback from '../immersive/ChatPlayback.jsx';
 
 const TILES = [
   { icon: '✉', style: undefined, title: 'Email us', value: 'hello@daysback.example' },
@@ -78,6 +79,12 @@ export default function Contact() {
             ✓ Thanks, we'll be in touch within 24 hours.
           </p>
         </form>
+      </section>
+
+      {/* While they're deciding whether to get in touch: what an agent
+          actually does for a business like theirs. */}
+      <section className="section contact-demo">
+        <ChatPlayback />
       </section>
     </main>
   );
