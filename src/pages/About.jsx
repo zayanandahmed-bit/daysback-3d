@@ -1,45 +1,71 @@
 import { useEffect, useRef, useState } from 'react';
 import CtaBand from '../components/CtaBand.jsx';
 
-function ValueStep({ value, index }) {
-  const ref = useRef(null);
-  const [seen, setSeen] = useState(false);
+// The values section pins in place while you scroll through it: the page
+// stays put and each scroll swaps to the next value, like a dial clicking
+// round, then the page carries on once all four have been shown.
+function ValuesScroller({ values }) {
+  const trackRef = useRef(null);
+  const [active, setActive] = useState(0);
   const [n, setN] = useState(0);
 
   useEffect(() => {
-    const el = ref.current;
-    const io = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting) { setSeen(true); io.disconnect(); }
-    }, { threshold: 0.45 });
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const el = trackRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const span = el.offsetHeight - window.innerHeight;
+      const p = Math.max(0, Math.min(0.9999, -rect.top / Math.max(1, span)));
+      setActive(Math.floor(p * values.length));
+    };
+    const onScroll = () => { if (!frame) frame = requestAnimationFrame(update); };
+    update();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, [values.length]);
 
+  // Count the number up each time a new value arrives.
   useEffect(() => {
-    if (!seen) return undefined;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { setN(value.stat); return undefined; }
+    const target = values[active].stat;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { setN(target); return undefined; }
     let frame;
     const start = performance.now();
     const tick = (now) => {
-      const t = Math.min(1, (now - start) / 1200);
-      setN(Math.round(value.stat * (1 - Math.pow(1 - t, 3))));
+      const t = Math.min(1, (now - start) / 900);
+      setN(Math.round(target * (1 - Math.pow(1 - t, 3))));
       if (t < 1) frame = requestAnimationFrame(tick);
     };
+    setN(0);
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, [seen, value.stat]);
+  }, [active, values]);
 
+  const v = values[active];
   return (
-    <div ref={ref} className={'value-step' + (seen ? ' in' : '') + (index % 2 ? ' flip' : '')}>
-      <div className="value-stat">
-        <span className="value-num">{value.prefix || ''}{n}{value.unit}</span>
-        <span className="value-label">{value.label}</span>
-      </div>
-      <div className="value-text">
-        <span className="value-icon">{value.icon}</span>
-        <span className="value-count">{String(index + 1).padStart(2, '0')} / 04</span>
-        <h3>{value.title}</h3>
-        <p>{value.body}</p>
+    <div className="values-track" ref={trackRef} style={{ height: `${values.length * 70 + 30}vh` }}>
+      <div className="values-pin">
+        <div className={'value-step in' + (active % 2 ? ' flip' : '')} key={active}>
+          <div className="value-stat">
+            <span className="value-num">{v.prefix || ''}{n}{v.unit}</span>
+            <span className="value-label">{v.label}</span>
+          </div>
+          <div className="value-text">
+            <span className="value-icon">{v.icon}</span>
+            <span className="value-count">{String(active + 1).padStart(2, '0')} / {String(values.length).padStart(2, '0')}</span>
+            <h3>{v.title}</h3>
+            <p>{v.body}</p>
+          </div>
+        </div>
+        <div className="values-dots" aria-hidden="true">
+          {values.map((x, i) => <span key={x.title} className={i === active ? 'on' : i < active ? 'done' : ''} />)}
+        </div>
       </div>
     </div>
   );
@@ -108,11 +134,7 @@ export default function About() {
           <p className="eyebrow">What we stand for</p>
           <h2>Our values</h2>
         </div>
-        {/* One value per screen: each slides in as you scroll to it, and its
-            number counts up when it arrives. */}
-        <div className="values-steps">
-          {VALUES.map((v, i) => <ValueStep key={v.title} value={v} index={i} />)}
-        </div>
+        <ValuesScroller values={VALUES} />
       </section>
 
       <CtaBand heading="Let's build something together">

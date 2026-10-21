@@ -46,7 +46,7 @@ function Rich({ text }) {
   ));
 }
 
-export default function LiveChat() {
+export default function LiveChat({ compact = false }) {
   const [ready, setReady] = useState(null);   // null = checking, false = not connected
   const [messages, setMessages] = useState(load);
   const [draft, setDraft] = useState('');
@@ -125,12 +125,14 @@ export default function LiveChat() {
   const live = ready === true;
 
   return (
-    <section className="section" id="talk">
-      <div className="section-head">
-        <p className="eyebrow">Try it yourself</p>
-        <h2>Now talk to ours</h2>
-        <p className="sub">This one is real. Tell it about your business and it'll show you what we could automate for you.</p>
-      </div>
+    <section className={compact ? 'livechat-compact' : 'section'} id="talk">
+      {!compact && (
+        <div className="section-head">
+          <p className="eyebrow">Try it yourself</p>
+          <h2>Now talk to ours</h2>
+          <p className="sub">This one is real. Tell it about your business and it'll show you what we could automate for you.</p>
+        </div>
+      )}
 
       <div className="demo">
         <div className="phone phone-live">

@@ -27,7 +27,7 @@ export default function Nav() {
             </NavLink>
           ))}
           <NavLink to="/contact" className="nav-cta" onClick={close}>
-            Let's Map Your Opportunities
+            Book a Call
           </NavLink>
         </nav>
         <button

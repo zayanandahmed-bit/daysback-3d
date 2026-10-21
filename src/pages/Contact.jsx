@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import ChatPlayback from '../immersive/ChatPlayback.jsx';
+import LiveChat from '../components/LiveChat.jsx';
 
 const TILES = [
   { icon: '✉', style: undefined, title: 'Email us', value: 'hello@daysback.example' },
@@ -46,46 +46,52 @@ export default function Contact() {
           ))}
         </div>
 
-        <form
-          className="contact-form"
-          onSubmit={(e) => {
-            e.preventDefault();
-            setSent(true);
-          }}
-        >
-          <div className="form-row">
-            <input type="text" placeholder="Name" required />
-            <input type="email" placeholder="Email" required />
+        {/* Form on the left, our live AI on the right: ask it anything first,
+            or just leave your details. */}
+        <div className="contact-split">
+          <div className="contact-split-form">
+            <p className="eyebrow">Send us a message</p>
+          <form
+            className="contact-form"
+            onSubmit={(e) => {
+              e.preventDefault();
+              setSent(true);
+            }}
+          >
+            <div className="form-row">
+              <input type="text" placeholder="Name" required />
+              <input type="email" placeholder="Email" required />
+            </div>
+            <input type="text" placeholder="Company" />
+            <select defaultValue="">
+              <option value="" disabled>
+                What do you want to automate?
+              </option>
+              <option>Custom AI Agents</option>
+              <option>Workflow Automation</option>
+              <option>Voice &amp; Chat Agents</option>
+              <option>Internal Ops Copilots</option>
+              <option>Not sure yet, help me figure it out</option>
+            </select>
+            <textarea
+              rows="4"
+              placeholder="Tell us a bit about your business and what eats up your time..."
+            />
+            <button type="submit" className="btn btn-primary">
+              Send Message
+            </button>
+            <p className={sent ? 'form-sent show' : 'form-sent'}>
+              ✓ Thanks, we'll be in touch within 24 hours.
+            </p>
+          </form>
           </div>
-          <input type="text" placeholder="Company" />
-          <select defaultValue="">
-            <option value="" disabled>
-              What do you want to automate?
-            </option>
-            <option>Custom AI Agents</option>
-            <option>Workflow Automation</option>
-            <option>Voice &amp; Chat Agents</option>
-            <option>Internal Ops Copilots</option>
-            <option>Not sure yet, help me figure it out</option>
-          </select>
-          <textarea
-            rows="4"
-            placeholder="Tell us a bit about your business and what eats up your time..."
-          />
-          <button type="submit" className="btn btn-primary">
-            Send Message
-          </button>
-          <p className={sent ? 'form-sent show' : 'form-sent'}>
-            ✓ Thanks, we'll be in touch within 24 hours.
-          </p>
-        </form>
+          <div className="contact-split-chat">
+            <p className="eyebrow">Or ask our AI right now</p>
+            <LiveChat compact />
+          </div>
+        </div>
       </section>
 
-      {/* While they're deciding whether to get in touch: what an agent
-          actually does for a business like theirs. */}
-      <section className="section contact-demo">
-        <ChatPlayback />
-      </section>
     </main>
   );
 }
