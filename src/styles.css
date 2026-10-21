@@ -1398,3 +1398,4 @@ html:not(.intro-done) .scroll-hint { opacity: 0; }
 .reply-page .form-note.ok { color: var(--accent3); }
 .reply-page .form-note.err { color: var(--accent2); }
 .reply-form label { display: flex; flex-direction: column; gap: .4rem; font-weight: 600; font-size: .9rem; }
+.reply-form input, .reply-form textarea { font-weight: 400; }
