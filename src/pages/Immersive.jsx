@@ -6,6 +6,9 @@ import LeakCalculator from '../components/LeakCalculator.jsx';
 import VoiceDemo from '../components/VoiceDemo.jsx';
 import LiveChat from '../components/LiveChat.jsx';
 import ChatPlayback from '../immersive/ChatPlayback.jsx';
+import Marquee from '../components/Marquee.jsx';
+
+const INTEGRATIONS = ['GMAIL', 'HUBSPOT', 'SALESFORCE', 'WHATSAPP', 'SLACK', 'NOTION', 'STRIPE', 'CALENDLY', 'GOOGLE SHEETS'];
 
 const SERVICES = [
   {
@@ -210,6 +213,8 @@ export default function Immersive() {
           you scroll or press "Start the tour". */}
       <div className="imm-cover" ref={coverRef} />
       <div className="imm-bar"><span ref={barRef} /></div>
+      {/* Tools we connect, running along under the nav for the whole flight. */}
+      <div className="imm-strip"><Marquee items={INTEGRATIONS} /></div>
       <div className="imm-tip" ref={tipRef} />
 
       <div className="imm-layer" ref={layerRef}>

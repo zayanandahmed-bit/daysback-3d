@@ -1209,3 +1209,22 @@ html:not(.intro-done) .scroll-hint { opacity: 0; }
 /* last stop: the same gradient call-to-action box as the main site */
 .imm-cta { left: 50%; top: 50%; width: min(1080px, 92vw); margin-left: calc(min(1080px, 92vw) / -2); transform: translateY(calc(-50% + var(--imm-y, 0px))); }
 .imm-cta .cta-band h2 { color: #fff; }
+
+/* integrations strip pinned under the nav on the 3D homepage */
+.imm-strip { position: fixed; left: 0; right: 0; top: var(--nav-h, 71px); z-index: 45; pointer-events: none; }
+.imm-strip .marquee { padding: 0.7rem 0; background: linear-gradient(90deg, rgba(246,241,255,0.97), rgba(255,240,246,0.97), rgba(255,248,232,0.97)); }
+.imm-strip .marquee-track span { font-size: 0.82rem; }
+/* everything below the strip moves down to make room for it */
+.imm-wide { top: 138px; }
+@media (min-width: 861px) { .imm-side.imm-tall { top: 132px; } }
+.imm-bar { top: var(--nav-h, 71px); z-index: 46; }
+@media (max-width: 860px) { .imm-wide { top: 118px; } }
+@media (max-width: 860px) {
+  :root { --nav-h: 64px; }
+  .imm-strip .marquee { padding: 0.5rem 0; }
+  .imm-wide { top: 104px; }
+  .imm-wide .section-head h2 { font-size: 1.15rem; }
+  .imm-wide .leak-inputs { gap: 0.65rem; }
+  .imm-wide .leak-field { gap: 0.4rem; }
+  .imm-wide .leak-label { font-size: 0.82rem; }
+}
