@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import LiveChat from '../components/LiveChat.jsx';
 import Marquee from '../components/Marquee.jsx';
+import { EMAIL, WHATSAPP, whatsappLink } from '../data/contact.js';
 
 // Reasons to get in touch, running under the nav. Only promises we actually
 // make (and can keep), so nothing here needs a source.
@@ -15,7 +16,15 @@ const PROMISES = [
 ];
 
 const TILES = [
-  { icon: '✉', style: undefined, title: 'Email us', value: 'contact@daysback.si', href: 'mailto:contact@daysback.si' },
+  { icon: '✉', style: undefined, title: 'Email us', value: EMAIL, href: 'mailto:' + EMAIL },
+  {
+    icon: '💬',
+    style: { background: 'linear-gradient(135deg,#25d366,#128c7e)' },
+    title: 'WhatsApp us',
+    value: WHATSAPP.display,
+    href: whatsappLink(),
+    external: true,
+  },
   {
     icon: '☎',
     style: { background: 'linear-gradient(135deg,#ff3d8a,#ffb020)' },
@@ -97,7 +106,7 @@ export default function Contact() {
                 {tile.icon}
               </div>
               <h3>{tile.title}</h3>
-              <p>{tile.href ? <a href={tile.href}>{tile.value}</a> : tile.value}</p>
+              <p>{tile.href ? <a href={tile.href} {...(tile.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>{tile.value}</a> : tile.value}</p>
             </div>
           ))}
         </div>

@@ -1381,3 +1381,8 @@ html:not(.intro-done) .scroll-hint { opacity: 0; }
 .imm-g-eyebrow { text-align: center; margin-bottom: 0.7rem; }
 @media (max-width: 900px) { .g-grid { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 640px) { .g-grid { grid-template-columns: 1fr; } .g-row { grid-template-columns: 1fr 1fr; } .g-chip { font-size: 0.78rem; padding: 0.55rem 0.7rem; } }
+/* four contact boxes now (email, WhatsApp, call, response time) */
+.contact-split + .contact-info { grid-template-columns: repeat(4, 1fr); }
+@media (max-width: 1000px) { .contact-split + .contact-info { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 560px) { .contact-split + .contact-info { grid-template-columns: 1fr; } }
+.footer-plain { display: block; color: var(--muted); font-size: 0.88rem; margin-bottom: 0.55rem; }

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { EMAIL, WHATSAPP, whatsappLink } from '../data/contact.js';
 
 export default function Footer() {
   return (
@@ -31,6 +32,10 @@ export default function Footer() {
           <h4>Get in touch</h4>
           <Link to="/contact">Let's Map Your Opportunities</Link>
           <Link to="/contact">Contact</Link>
+          <a href={'mailto:' + EMAIL}>{EMAIL}</a>
+          {whatsappLink()
+            ? <a href={whatsappLink()} target="_blank" rel="noopener noreferrer">WhatsApp {WHATSAPP.display}</a>
+            : <span className="footer-plain">WhatsApp {WHATSAPP.display}</span>}
         </div>
       </div>
       <div className="footer-bottom">
