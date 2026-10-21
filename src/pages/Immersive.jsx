@@ -311,7 +311,7 @@ export default function Immersive() {
         <section className="imm-panel imm-side imm-left" ref={reg('services')}>
           <p className="eyebrow">What we build</p>
           <h2>AI systems built around your business</h2>
-          <p className="imm-sub">Hover a card to bring it closer. Click it to see what it does.</p>
+          <p className="imm-sub">We look at how your business actually runs, then build the AI around it. No templates, no off-the-shelf bots, no hype.</p>
           <div className="imm-pills">
             {SERVICES.map((s, i) => <button key={s.title} type="button" onClick={() => setService(i)}>{s.icon} {s.title}</button>)}
           </div>

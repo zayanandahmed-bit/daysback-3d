@@ -40,7 +40,7 @@ function useEased(target) {
 }
 
 export default function LeakCalculator() {
-  const [v, setV] = useState({ hours: 15, rate: 15, missed: 5, value: 150 });
+  const [v, setV] = useState({ hours: 23, rate: 23, missed: 8, value: 230 });
 
   const yearlyAdminCost = v.hours * v.rate * 52 * AUTOMATABLE;
   const yearlyLostSales = v.missed * 52 * CLOSE_RATE * v.value;
