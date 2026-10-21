@@ -7,6 +7,7 @@ import VoiceDemo from '../components/VoiceDemo.jsx';
 import LiveChat from '../components/LiveChat.jsx';
 import ChatPlayback from '../immersive/ChatPlayback.jsx';
 import Marquee from '../components/Marquee.jsx';
+import Guarantees from '../components/Guarantees.jsx';
 
 const INTEGRATIONS = ['GMAIL', 'HUBSPOT', 'SALESFORCE', 'WHATSAPP', 'SLACK', 'NOTION', 'STRIPE', 'CALENDLY', 'GOOGLE SHEETS'];
 
@@ -349,9 +350,11 @@ export default function Immersive() {
         </section>
 
         <section className="imm-panel imm-cta" ref={reg('cta')}>
+          <p className="eyebrow imm-g-eyebrow">Our promises to you</p>
+          <Guarantees compact />
           <div className="cta-band">
-            <h2>Ready to get your DaysBack and generate revenue?</h2>
-            <p>Book a 20-minute strategy call.</p>
+            <h2>Ready to get your DaysBack and Generate Revenue?</h2>
+            <p>Book a 27-minute strategy call.</p>
             <Link to="/contact" className="btn btn-primary btn-lg">Let's Map Your Opportunities</Link>
           </div>
         </section>

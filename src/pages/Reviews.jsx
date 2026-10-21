@@ -18,7 +18,7 @@ export default function Reviews() {
       </section>
 
       <CtaBand heading="Want results like these?">
-        Book a free 20-minute call and we'll show you what's possible for your business.
+        Book a free 27-minute call and we'll show you what's possible for your business.
       </CtaBand>
     </main>
   );

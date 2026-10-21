@@ -164,7 +164,7 @@ export default function LiveChat({ compact = false }) {
             )}
             {ready === false && (
               <div className="bubble bubble-note">
-                Our live assistant is opening soon. In the meantime, <a href="/aireper/contact">book a free 20-minute call</a> and we'll answer everything.
+                Our live assistant is opening soon. In the meantime, <a href={import.meta.env.BASE_URL + 'contact'}>book a free 27-minute call</a> and we'll answer everything.
               </div>
             )}
             {error && <div className="bubble bubble-note live-error">{error}</div>}

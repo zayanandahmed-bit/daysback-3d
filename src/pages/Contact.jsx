@@ -5,7 +5,7 @@ import Marquee from '../components/Marquee.jsx';
 // Reasons to get in touch, running under the nav. Only promises we actually
 // make (and can keep), so nothing here needs a source.
 const PROMISES = [
-  '✓ FREE 20-MINUTE STRATEGY CALL',
+  '✓ FREE 27-MINUTE STRATEGY CALL',
   '✓ REPLY WITHIN 1 HOUR',
   '✓ CLEAR QUOTE BEFORE ANY WORK STARTS',
   '✓ LIVE IN UNDER 5 WORKING DAYS',
@@ -43,7 +43,7 @@ export default function Contact() {
           Tell us about <span className="grad">your business</span>
         </h1>
         <p className="hero-sub">
-          Book a free 20-minute strategy call: we'll show you exactly where AI can save you
+          Book a free 27-minute strategy call: we'll show you exactly where AI can save you
           the most time.
         </p>
       </section>

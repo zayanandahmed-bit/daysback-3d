@@ -5,6 +5,7 @@ import AutomationLibrary from '../components/AutomationLibrary.jsx';
 import VoiceDemo from '../components/VoiceDemo.jsx';
 import LiveChat from '../components/LiveChat.jsx';
 import Timeline from '../components/Timeline.jsx';
+import Guarantees from '../components/Guarantees.jsx';
 
 const CORE = [
   {
@@ -130,6 +131,8 @@ export default function Services() {
         </div>
         <Faq items={FAQS} />
       </section>
+
+      <Guarantees />
 
       <CtaBand heading="Not sure which service fits?">
         Book a free audit call: we'll map your workflows and tell you exactly what to automate first.

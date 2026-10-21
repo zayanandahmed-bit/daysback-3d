@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import CtaBand from '../components/CtaBand.jsx';
+import Guarantees from '../components/Guarantees.jsx';
 import { useStepScroll } from '../hooks/useStepScroll.js';
 
 // The values section pins in place while you scroll through it: the page
@@ -84,8 +85,8 @@ function ValuesScroller({ values }) {
 // on the site, not a made-up result.
 const VALUES = [
   {
-    icon: '⚡', title: 'Results over hype', stat: 20, unit: ' min', label: 'free strategy call',
-    body: "We measure success in hours saved and revenue won, not buzzwords. In one 20-minute call we'll tell you what's worth automating, and if an automation won't pay for itself, we'll say so.",
+    icon: '⚡', title: 'Results over hype', stat: 27, unit: ' min', label: 'free strategy call',
+    body: "We measure success in hours saved and revenue won, not buzzwords. In one 27-minute call we'll tell you what's worth automating, and if an automation won't pay for itself, we'll say so.",
   },
   {
     icon: '🔒', title: 'Your data, protected', stat: 100, unit: '%', label: 'of your data stays yours',
@@ -145,6 +146,8 @@ export default function About() {
         </div>
         <ValuesScroller values={VALUES} />
       </section>
+
+      <Guarantees />
 
       <CtaBand heading="Let's build something together">
         Tell us about your business and we'll show you what AI can take off your plate.

@@ -246,8 +246,8 @@ export default function Home() {
         <Faq items={FAQS} />
       </section>
 
-      <CtaBand heading="Ready to get your DaysBack and generate revenue?" button="Let's Map Your Opportunities">
-        Book a 20-minute strategy call.
+      <CtaBand heading="Ready to get your DaysBack and Generate Revenue?" button="Let's Map Your Opportunities">
+        Book a 27-minute strategy call.
       </CtaBand>
     </main>
   );
