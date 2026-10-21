@@ -1,5 +1,18 @@
 import { useState } from 'react';
 import LiveChat from '../components/LiveChat.jsx';
+import Marquee from '../components/Marquee.jsx';
+
+// Reasons to get in touch, running under the nav. Only promises we actually
+// make (and can keep), so nothing here needs a source.
+const PROMISES = [
+  '✓ FREE 20-MINUTE STRATEGY CALL',
+  '✓ REPLY WITHIN 24 HOURS',
+  '✓ CLEAR QUOTE BEFORE ANY WORK STARTS',
+  '✓ LIVE IN UNDER 5 WORKING DAYS',
+  '✓ NO LOCK-IN CONTRACTS',
+  '✓ YOUR DATA STAYS YOURS',
+  '✓ NO OBLIGATION, NO PRESSURE',
+];
 
 const TILES = [
   { icon: '✉', style: undefined, title: 'Email us', value: 'hello@daysback.example' },
@@ -22,6 +35,8 @@ export default function Contact() {
 
   return (
     <main>
+      <div className="imm-strip contact-strip"><Marquee items={PROMISES} /></div>
+
       <section className="page-hero contact-hero">
         <p className="eyebrow">Get started</p>
         <h1>

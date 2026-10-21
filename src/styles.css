@@ -1344,3 +1344,7 @@ html:not(.intro-done) .scroll-hint { opacity: 0; }
 .contact-split + .contact-info { margin-top: 2.4rem; }
 .livechat-compact .demo { gap: 0; justify-content: stretch; }
 .livechat-compact > .demo > .phone-live { margin: 0; }
+/* contact: trust strip under the nav, so the hero starts below it */
+.contact-strip { z-index: 45; }
+.contact-hero { padding-top: 9.6rem; }
+@media (max-width: 860px) { .contact-hero { padding-top: 8.4rem; } }
