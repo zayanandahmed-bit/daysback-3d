@@ -8,6 +8,7 @@ import Services from './pages/Services.jsx';
 import Reviews from './pages/Reviews.jsx';
 import About from './pages/About.jsx';
 import Contact from './pages/Contact.jsx';
+import Reply from './pages/Reply.jsx';
 import { useCardTilt, useScrollReveal } from './hooks/useSiteEffects.js';
 
 // Three.js is by far the heaviest thing on the page and it only draws
@@ -52,6 +53,7 @@ export default function App() {
         <Route path="/reviews" element={<Reviews />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/reply" element={<Reply />} />
 
         {/* The site used to be plain .html files, so links already out in the
             world (the WhatsApp share, anything indexed) point at those paths.

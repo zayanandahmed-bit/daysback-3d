@@ -1388,3 +1388,13 @@ html:not(.intro-done) .scroll-hint { opacity: 0; }
 .footer-plain { display: block; color: var(--muted); font-size: 0.88rem; margin-bottom: 0.55rem; }
 .hp-field { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 .form-error { color: #c0265e; font-size: 0.9rem; }
+
+/* Team reply page */
+.reply-page { max-width: 720px; margin: 0 auto; padding-top: 7rem; }
+.reply-form { max-width: none; }
+.reply-form textarea { width: 100%; font: inherit; line-height: 1.55; resize: vertical; }
+.reply-to { margin: 0 0 .4rem; color: var(--muted); }
+.reply-page .form-note { margin: 0; font-weight: 600; }
+.reply-page .form-note.ok { color: var(--accent3); }
+.reply-page .form-note.err { color: var(--accent2); }
+.reply-form label { display: flex; flex-direction: column; gap: .4rem; font-weight: 600; font-size: .9rem; }
