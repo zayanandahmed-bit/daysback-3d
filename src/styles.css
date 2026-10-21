@@ -1203,3 +1203,9 @@ html:not(.intro-done) .scroll-hint { opacity: 0; }
 @media (min-width: 861px) {
   .imm-side.imm-tall { top: 84px; transform: translateY(var(--imm-y, 0px)); }
 }
+
+/* opening screen: no 3D behind the first text */
+.imm-cover { position: fixed; inset: 0; z-index: 2; background: var(--bg); pointer-events: none; }
+/* last stop: the same gradient call-to-action box as the main site */
+.imm-cta { left: 50%; top: 50%; width: min(1080px, 92vw); margin-left: calc(min(1080px, 92vw) / -2); transform: translateY(calc(-50% + var(--imm-y, 0px))); }
+.imm-cta .cta-band h2 { color: #fff; }

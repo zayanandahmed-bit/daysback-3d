@@ -59,6 +59,7 @@ export default function Immersive() {
   const tipRef = useRef(null);
   const barRef = useRef(null);
   const layerRef = useRef(null);
+  const coverRef = useRef(null);
   const [service, setService] = useState(null);
   const [auto, setAuto] = useState(0);
   const [demoStep, setDemoStep] = useState(0);
@@ -146,6 +147,11 @@ export default function Immersive() {
         el.style.visibility = o < 0.01 ? 'hidden' : 'visible';
       });
       if (barRef.current) barRef.current.style.transform = `scaleX(${current})`;
+      if (coverRef.current) {
+        const c = Math.max(0, 1 - current / 0.03);
+        coverRef.current.style.opacity = c.toFixed(3);
+        coverRef.current.style.visibility = c < 0.005 ? 'hidden' : 'visible';
+      }
       // The scripted chat plays as you scroll through its stop: one message
       // per step. State only changes when the step does, not every frame.
       if (demoKnot) {
@@ -198,14 +204,17 @@ export default function Immersive() {
   return (
     <main className="imm">
       <canvas ref={canvasRef} className="imm-canvas" />
+      {/* Plain page behind the opening text: the 3D world only appears once
+          you scroll or press "Start the tour". */}
+      <div className="imm-cover" ref={coverRef} />
       <div className="imm-bar"><span ref={barRef} /></div>
       <div className="imm-tip" ref={tipRef} />
 
       <div className="imm-layer" ref={layerRef}>
         <section className="imm-panel imm-hero" ref={reg('hero')}>
           <p className="eyebrow">AI Automation Studio</p>
-          <h1>We find where your business leaks money and wastes days, then we build the AI that fixes it and <span className="grad">gets your days back</span></h1>
-          <p className="imm-sub">Scroll to fly through what we do. Hover and click anything that glows.</p>
+          <h1>We find where your business leaks money and wastes days, then we build the AI that fixes it and <span className="grad">gets your DaysBack</span></h1>
+          <p className="imm-sub">Somewhere in your business, time and money are slipping away, and you're probably too close to see it. At DaysBack, we look at how you actually operate, find the gaps, and build bespoke AI solutions around them so that you focus on growth while our solutions do the heavy-lifting for you.</p>
           <div className="hero-actions">
             <button type="button" className="btn btn-primary" onClick={() => jump('leak')}>Start the tour ↓</button>
             <Link to="/contact" className="btn btn-ghost imm-ghost">Book a Free Strategy Call</Link>
@@ -256,13 +265,11 @@ export default function Immersive() {
           <LiveChat />
         </section>
 
-        <section className="imm-panel imm-hero" ref={reg('cta')}>
-          <p className="eyebrow">That's the whole picture</p>
-          <h2>Ready to get your DaysBack and generate revenue?</h2>
-          <p className="imm-sub">Audit, design, build, deploy. Most agents go live in under 5 working business days. Book a 20-minute strategy call.</p>
-          <div className="hero-actions">
-            <Link to="/contact" className="btn btn-primary">Let's Map Your Opportunities</Link>
-            <button type="button" className="btn btn-ghost imm-ghost" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>↺ Fly again</button>
+        <section className="imm-panel imm-cta" ref={reg('cta')}>
+          <div className="cta-band">
+            <h2>Ready to get your DaysBack and generate revenue?</h2>
+            <p>Book a 20-minute strategy call.</p>
+            <Link to="/contact" className="btn btn-primary btn-lg">Let's Map Your Opportunities</Link>
           </div>
         </section>
       </div>
