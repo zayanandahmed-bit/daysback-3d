@@ -15,7 +15,7 @@ const PROMISES = [
 ];
 
 const TILES = [
-  { icon: '✉', style: undefined, title: 'Email us', value: 'hello@daysback.example' },
+  { icon: '✉', style: undefined, title: 'Email us', value: 'contact@daysback.si', href: 'mailto:contact@daysback.si' },
   {
     icon: '☎',
     style: { background: 'linear-gradient(135deg,#ff3d8a,#ffb020)' },
@@ -97,7 +97,7 @@ export default function Contact() {
                 {tile.icon}
               </div>
               <h3>{tile.title}</h3>
-              <p>{tile.value}</p>
+              <p>{tile.href ? <a href={tile.href}>{tile.value}</a> : tile.value}</p>
             </div>
           ))}
         </div>
