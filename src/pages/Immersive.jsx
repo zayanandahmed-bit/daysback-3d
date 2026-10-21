@@ -148,7 +148,9 @@ export default function Immersive() {
       });
       if (barRef.current) barRef.current.style.transform = `scaleX(${current})`;
       if (coverRef.current) {
-        const c = Math.max(0, 1 - current / 0.03);
+        // Plain page on the opening screen, and again at the closing
+        // call-to-action, so nothing from the 3D world sits behind either.
+        const c = Math.max(0, 1 - current / 0.03, Math.min(1, (journey - 0.94) / 0.025));
         coverRef.current.style.opacity = c.toFixed(3);
         coverRef.current.style.visibility = c < 0.005 ? 'hidden' : 'visible';
       }
