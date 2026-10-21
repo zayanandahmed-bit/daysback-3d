@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import CtaBand from '../components/CtaBand.jsx';
+import { useStepScroll } from '../hooks/useStepScroll.js';
 
 // The values section pins in place while you scroll through it: the page
 // stays put and each scroll swaps to the next value, like a dial clicking
@@ -47,6 +48,17 @@ function ValuesScroller({ values }) {
     return () => cancelAnimationFrame(frame);
   }, [active, values]);
 
+  // One scroll = one value: the stops sit at the start of each value's share
+  // of the pinned track.
+  const getStops = useCallback(() => {
+    const el = trackRef.current;
+    if (!el) return [];
+    const top = el.getBoundingClientRect().top + window.scrollY;
+    const span = el.offsetHeight - window.innerHeight;
+    return values.map((_, i) => Math.round(top + ((i + 0.04) / values.length) * span));
+  }, [values]);
+  useStepScroll(getStops);
+
   const v = values[active];
   return (
     <div className="values-track" ref={trackRef} style={{ height: `${values.length * 70 + 30}vh` }}>
@@ -62,9 +74,6 @@ function ValuesScroller({ values }) {
             <h3>{v.title}</h3>
             <p>{v.body}</p>
           </div>
-        </div>
-        <div className="values-dots" aria-hidden="true">
-          {values.map((x, i) => <span key={x.title} className={i === active ? 'on' : i < active ? 'done' : ''} />)}
         </div>
       </div>
     </div>

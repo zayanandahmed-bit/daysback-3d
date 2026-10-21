@@ -6,7 +6,7 @@ import Marquee from '../components/Marquee.jsx';
 // make (and can keep), so nothing here needs a source.
 const PROMISES = [
   '✓ FREE 20-MINUTE STRATEGY CALL',
-  '✓ REPLY WITHIN 24 HOURS',
+  '✓ REPLY WITHIN 1 HOUR',
   '✓ CLEAR QUOTE BEFORE ANY WORK STARTS',
   '✓ LIVE IN UNDER 5 WORKING DAYS',
   '✓ NO LOCK-IN CONTRACTS',
@@ -26,7 +26,7 @@ const TILES = [
     icon: '⏱',
     style: { background: 'linear-gradient(135deg,#00b8a0,#6c3cff)' },
     title: 'Response time',
-    value: 'Within 24 hours, every time',
+    value: 'Within 1 hour, every time',
   },
 ];
 
@@ -80,7 +80,7 @@ export default function Contact() {
               Send Message
             </button>
             <p className={sent ? 'form-sent show' : 'form-sent'}>
-              ✓ Thanks, we'll be in touch within 24 hours.
+              ✓ Thanks, we'll be in touch within 1 hour.
             </p>
           </form>
           </div>
