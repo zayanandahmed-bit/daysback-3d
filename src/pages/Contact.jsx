@@ -40,7 +40,36 @@ const TILES = [
 ];
 
 export default function Contact() {
-  const [sent, setSent] = useState(false);
+  const [status, setStatus] = useState('idle');   // idle | sending | sent | error
+  const [error, setError] = useState('');
+
+  // Sends the form to the daysback-enquiry function, which saves it and
+  // emails the team. If that fails for any reason, say so and give the email
+  // address, so nobody thinks they've been heard when they haven't.
+  const submit = async (e) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const data = Object.fromEntries(new FormData(form).entries());
+    setStatus('sending');
+    setError('');
+    try {
+      const url = import.meta.env.VITE_ENQUIRY_URL;
+      if (!url) throw new Error('not configured');
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...data, page: window.location.pathname }),
+      });
+      const out = await res.json().catch(() => ({}));
+      if (!res.ok || !out.ok) throw new Error(out.error || 'failed');
+      setStatus('sent');
+      form.reset();
+    } catch (err) {
+      setStatus('error');
+      setError(err.message && err.message.includes('@') ? err.message
+        : "Sorry, that didn't send. Please email us at " + EMAIL + '.');
+    }
+  };
 
   return (
     <main>
@@ -63,19 +92,13 @@ export default function Contact() {
         <div className="contact-split">
           <div className="contact-split-form">
             <p className="eyebrow">Send us a message</p>
-          <form
-            className="contact-form"
-            onSubmit={(e) => {
-              e.preventDefault();
-              setSent(true);
-            }}
-          >
+          <form className="contact-form" onSubmit={submit} noValidate={false}>
             <div className="form-row">
-              <input type="text" placeholder="Name" required />
-              <input type="email" placeholder="Email" required />
+              <input type="text" name="name" placeholder="Name" required maxLength={100} />
+              <input type="email" name="email" placeholder="Email" required maxLength={160} />
             </div>
-            <input type="text" placeholder="Company" />
-            <select defaultValue="">
+            <input type="text" name="company" placeholder="Company" maxLength={120} />
+            <select name="interest" defaultValue="">
               <option value="" disabled>
                 What do you want to automate?
               </option>
@@ -85,12 +108,15 @@ export default function Contact() {
               <option>Internal Ops Copilots</option>
               <option>Not sure yet, help me figure it out</option>
             </select>
-            <button type="submit" className="btn btn-primary">
-              Send Message
+            {/* Hidden from people; spam bots fill it in and get quietly ignored. */}
+            <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hp-field" />
+            <button type="submit" className="btn btn-primary" disabled={status === 'sending' || status === 'sent'}>
+              {status === 'sending' ? 'Sending…' : status === 'sent' ? 'Sent ✓' : 'Send Message'}
             </button>
-            <p className={sent ? 'form-sent show' : 'form-sent'}>
+            <p className={status === 'sent' ? 'form-sent show' : 'form-sent'}>
               ✓ Thanks, we'll be in touch within 1 hour.
             </p>
+            {status === 'error' && <p className="form-error">{error}</p>}
           </form>
           </div>
           <div className="contact-split-chat">
