@@ -169,12 +169,69 @@ export default function Immersive() {
     // over one must still fly the camera, not scroll the panel or stall, so
     // wheel turns anywhere on the layer go straight to the page.
     const layer = layerRef.current;
-    const onWheel = (e) => {
-      if (e.ctrlKey) return;              // pinch-zoom on trackpads
-      e.preventDefault();
-      window.scrollBy({ top: e.deltaMode === 1 ? e.deltaY * 32 : e.deltaY, behavior: 'instant' });
+    // In the automation chain, one scroll gesture moves exactly one node:
+    // a mouse-wheel notch or a trackpad swipe (with all its momentum) takes
+    // you to the next automation and no further. Outside the chain, scrolling
+    // is normal.
+    const spacer = spacerRef.current;
+    const yFor = (r) => spacer.offsetTop + r * (spacer.offsetHeight - window.innerHeight);
+    const autoYs = () => knots.filter((k) => k.id.startsWith('auto')).map((k) => yFor((k.a + k.b) / 2));
+    let lastWheel = 0, stepping = false;
+    const stepTarget = (dir) => {
+      const ys = autoYs();
+      const y = window.scrollY;
+      const lead = window.innerHeight * 0.6;
+      if (y < ys[0] - lead || y > ys[ys.length - 1] + lead) return null;     // not in the chain
+      const next = dir > 0 ? ys.find((v) => v > y + 4) : [...ys].reverse().find((v) => v < y - 4);
+      return next === undefined ? null : next;                               // past either end: scroll on normally
     };
-    layer.addEventListener('wheel', onWheel, { passive: false });
+    const step = (dir) => {
+      const to = stepTarget(dir);
+      if (to === null) return false;
+      stepping = true;
+      window.scrollTo({ top: to, behavior: 'smooth' });
+      // Stay locked until the glide has finished; after that, only a fresh
+      // gesture (a pause in wheel events) can move on again.
+      setTimeout(() => { stepping = false; }, 800);
+      return true;
+    };
+    const onWheel = (e) => {
+      if (e.ctrlKey) return;                                // pinch-zoom on trackpads
+      const dy = e.deltaMode === 1 ? e.deltaY * 32 : e.deltaY;
+      const now = performance.now();
+      const fresh = now - lastWheel > 300;                  // a new gesture, not momentum from the last
+      lastWheel = now;
+      if (stepTarget(Math.sign(dy)) !== null) {
+        e.preventDefault();
+        if (fresh && !stepping && Math.abs(dy) > 1) step(Math.sign(dy));
+        return;
+      }
+      // Over a text panel, wheel turns still fly the camera rather than
+      // being swallowed by the panel.
+      if (layer.contains(e.target)) {
+        e.preventDefault();
+        window.scrollBy({ top: dy, behavior: 'instant' });
+      }
+    };
+    window.addEventListener('wheel', onWheel, { passive: false });
+
+    // Same for a swipe on a touch screen.
+    let touchY = null;
+    const onTouchStart = (e) => { touchY = e.touches[0].clientY; };
+    const onTouchMove = (e) => {
+      if (touchY === null) return;
+      const dy = touchY - e.touches[0].clientY;
+      if (stepTarget(Math.sign(dy) || 1) !== null) e.preventDefault();
+    };
+    const onTouchEnd = (e) => {
+      if (touchY === null) return;
+      const dy = touchY - (e.changedTouches[0] ? e.changedTouches[0].clientY : touchY);
+      touchY = null;
+      if (Math.abs(dy) > 30 && !stepping) step(Math.sign(dy));
+    };
+    window.addEventListener('touchstart', onTouchStart, { passive: true });
+    window.addEventListener('touchmove', onTouchMove, { passive: false });
+    window.addEventListener('touchend', onTouchEnd, { passive: true });
     measure();
     window.addEventListener('scroll', measure, { passive: true });
     window.addEventListener('resize', measure);
@@ -182,7 +239,10 @@ export default function Immersive() {
     return () => {
       alive = false;
       cancelAnimationFrame(frame);
-      layer.removeEventListener('wheel', onWheel);
+      window.removeEventListener('wheel', onWheel);
+      window.removeEventListener('touchstart', onTouchStart);
+      window.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener('touchend', onTouchEnd);
       window.removeEventListener('scroll', measure);
       window.removeEventListener('resize', measure);
       world.dispose();

@@ -215,6 +215,8 @@ export function createWorld(canvas, { services, automations, onHover, onSelect }
 
   // ---------- automations: a helix of glowing nodes ----------
   const orbs = [];
+  const GREY = 0xd6d0e6;           // nodes you haven't reached yet
+  const greyColor = new THREE.Color(GREY);
   const helixPts = [];
   automations.forEach((a, i) => {
     const t = automations.length === 1 ? 0 : i / (automations.length - 1);
@@ -223,8 +225,8 @@ export function createWorld(canvas, { services, automations, onHover, onSelect }
     const p = new THREE.Vector3(HELIX.x + Math.cos(ang) * HELIX.r, y, HELIX.z + Math.sin(ang) * HELIX.r);
     helixPts.push(p);
     const color = [C.violet, C.pink, C.sun, C.teal][i % 4];
-    const orb = new THREE.Mesh(track(new THREE.IcosahedronGeometry(0.62, 1)), track(new THREE.MeshBasicMaterial({ color, wireframe: true, transparent: true, opacity: 0.9 })));
-    const core = new THREE.Mesh(track(new THREE.SphereGeometry(0.32, 20, 20)), track(new THREE.MeshBasicMaterial({ color })));
+    const orb = new THREE.Mesh(track(new THREE.IcosahedronGeometry(0.62, 1)), track(new THREE.MeshBasicMaterial({ color: GREY, wireframe: true, transparent: true, opacity: 0.9 })));
+    const core = new THREE.Mesh(track(new THREE.SphereGeometry(0.32, 20, 20)), track(new THREE.MeshBasicMaterial({ color: GREY })));
     const halo = new THREE.Sprite(track(new THREE.SpriteMaterial({ map: glow, color, transparent: true, opacity: 0.55, depthWrite: false, blending: THREE.NormalBlending })));
     halo.scale.set(3, 3, 1);
     const label = labelSprite(a.icon + '  ' + a.title);
@@ -233,30 +235,31 @@ export function createWorld(canvas, { services, automations, onHover, onSelect }
     const g = new THREE.Group();
     g.add(halo, orb, core, label);
     g.position.copy(p);
-    g.userData = { kind: 'automation', index: i, orb, halo, label, hover: 0, active: 0 };
+    g.userData = { kind: 'automation', index: i, orb, core, halo, label, hover: 0, active: 0, lit: 0, color: new THREE.Color(color) };
     orb.userData = core.userData = g.userData;
     scene.add(g);
     orbs.push(g);
   });
   const helixCurve = new THREE.CatmullRomCurve3(helixPts);
-  let helixTube;
+  let helixTube, helixFill;
   {
+    // A pale track for the whole chain, and a coloured line drawn over it
+    // that fills down to wherever you've reached.
     helixTube = new THREE.Mesh(
       track(new THREE.TubeGeometry(helixCurve, 300, 0.05, 8, false)),
-      track(new THREE.MeshBasicMaterial({ color: 0xb9a6ff, transparent: true, opacity: 0.7 }))
+      track(new THREE.MeshBasicMaterial({ color: 0xe3ddf3, transparent: true, opacity: 1 }))
     );
     scene.add(helixTube);
+    helixFill = new THREE.Mesh(
+      track(new THREE.TubeGeometry(helixCurve, 300, 0.085, 10, false)),
+      track(new THREE.MeshBasicMaterial({ color: C.violet }))
+    );
+    helixFill.geometry.setDrawRange(0, 0);
+    scene.add(helixFill);
   }
-  // Data pulses travelling down the chain.
-  const pulses = [];
-  for (let i = 0; i < 10; i++) {
-    const s = new THREE.Sprite(track(new THREE.SpriteMaterial({ map: glow, color: i % 2 ? C.pink : C.teal, transparent: true, depthWrite: false, blending: THREE.NormalBlending })));
-    s.scale.set(0.9, 0.9, 1);
-    s.userData.offset = i / 10;
-    scene.add(s);
-    pulses.push(s);
-  }
-
+  const FILL_STEP = 10 * 6;                         // indices per tube segment
+  const FILL_TOTAL = 300 * FILL_STEP;
+  let fill = 0;
   // ---------- voice station: a phone ringing out sound waves ----------
   const voice = new THREE.Group();
   voice.position.copy(VOICE_AT);
@@ -390,22 +393,30 @@ export function createWorld(canvas, { services, automations, onHover, onSelect }
     const inHelix = progress > 0.49 && progress < 0.72;
     const current = inHelix ? nearest : -1;
     if (current !== activeAuto) { activeAuto = current; onSelect('autoFocus', current); }
+
+    // The line fills down the chain as the camera descends: one node reached
+    // per stop, and nodes light up in their colour only once the line gets there.
+    const span = HELIX.top - HELIX.bottom;
+    const want = progress < 0.45 ? 0 : progress > 0.74 ? 1 : THREE.MathUtils.clamp((HELIX.top - camY) / span, 0, 1);
+    fill += (want - fill) * 0.12;
+    helixFill.geometry.setDrawRange(0, Math.floor((fill * FILL_TOTAL) / FILL_STEP) * FILL_STEP);
+    const last = orbs.length - 1;
     orbs.forEach((o, i) => {
       const d = o.userData;
       d.hover += ((hovered === d ? 1 : 0) - d.hover) * 0.15;
       d.active += ((i === activeAuto ? 1 : 0) - d.active) * 0.1;
-      const s = 1 + d.hover * 0.45 + d.active * 0.35;
+      d.lit += ((fill >= i / last - 0.015 ? 1 : 0) - d.lit) * 0.12;
+      d.orb.material.color.copy(greyColor).lerp(d.color, d.lit);
+      d.core.material.color.copy(greyColor).lerp(d.color, d.lit);
+      const s = 0.85 + d.lit * 0.15 + d.hover * 0.35 + d.active * 0.35;
       d.orb.scale.setScalar(s);
-      o.children[2].scale.setScalar(1 + d.active * 0.5);
+      d.core.scale.setScalar(1 + d.active * 0.5);
       d.orb.rotation.x = t * 0.4 + i;
       d.orb.rotation.y = t * 0.5;
-      d.halo.material.opacity = 0.18 + d.hover * 0.22 + d.active * 0.25;
+      // Only the current node glows; the rest stay calm.
+      d.halo.material.opacity = d.active * 0.35 + d.hover * 0.2;
       d.halo.scale.setScalar(3 + d.active * 2.5);
-      d.label.material.opacity = 0.55 + Math.max(d.hover, d.active) * 0.45;
-    });
-    pulses.forEach((p) => {
-      const k = (t * 0.07 + p.userData.offset) % 1;
-      helixCurve.getPoint(k, p.position);
+      d.label.material.opacity = 0.3 + d.lit * 0.25 + Math.max(d.hover, d.active) * 0.45;
     });
 
     handset.rotation.y = t * 0.6;

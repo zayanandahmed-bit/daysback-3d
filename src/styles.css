@@ -1123,7 +1123,7 @@ html:not(.intro-done) .scroll-hint { opacity: 0; }
   left: 50%; top: 50%; width: min(880px, 92vw); text-align: center;
   margin-left: calc(min(880px, 92vw) / -2); margin-top: -12rem;
 }
-.imm-hero h1 { font-size: clamp(1.9rem, 4vw, 3.2rem); line-height: 1.1; text-shadow: 0 4px 30px rgba(253,252,255,0.95); }
+.imm-hero h1 { font-size: clamp(1.9rem, 4vw, 3.2rem); line-height: 1.1; }
 .imm-hero h2 { font-size: clamp(1.8rem, 3.6vw, 3rem); line-height: 1.12; }
 .imm-hero .hero-actions { margin: 1.8rem 0 0; }
 .imm-ghost { background: rgba(255,255,255,0.85) !important; }
@@ -1228,3 +1228,5 @@ html:not(.intro-done) .scroll-hint { opacity: 0; }
   .imm-wide .leak-field { gap: 0.4rem; }
   .imm-wide .leak-label { font-size: 0.82rem; }
 }
+/* headline highlight: deeper end colour so it reads strongly on white */
+.imm-hero h1 .grad { background: linear-gradient(90deg, #6c3cff, #e0307e 55%, #ff6a1a); -webkit-background-clip: text; background-clip: text; color: transparent; }
