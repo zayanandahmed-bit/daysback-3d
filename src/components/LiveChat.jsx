@@ -183,7 +183,7 @@ export default function LiveChat({ compact = false }) {
             <button type="submit" disabled={!live || busy || !draft.trim()} aria-label="Send">➤</button>
           </form>
         </div>
-        <p className="voice-note">AI can make mistakes. For anything important, book a call.</p>
+        {!compact && <p className="voice-note">AI can make mistakes. For anything important, book a call.</p>}
       </div>
     </section>
   );

@@ -22,7 +22,7 @@ export default function Contact() {
 
   return (
     <main>
-      <section className="page-hero">
+      <section className="page-hero contact-hero">
         <p className="eyebrow">Get started</p>
         <h1>
           Tell us about <span className="grad">your business</span>
@@ -33,19 +33,7 @@ export default function Contact() {
         </p>
       </section>
 
-      <section className="section" style={{ paddingTop: '2rem' }}>
-        <div className="contact-info">
-          {TILES.map((tile) => (
-            <div className="info-tile" key={tile.title}>
-              <div className="card-icon" style={tile.style}>
-                {tile.icon}
-              </div>
-              <h3>{tile.title}</h3>
-              <p>{tile.value}</p>
-            </div>
-          ))}
-        </div>
-
+      <section className="section" style={{ paddingTop: '1.6rem' }}>
         {/* Form on the left, our live AI on the right: ask it anything first,
             or just leave your details. */}
         <div className="contact-split">
@@ -73,10 +61,6 @@ export default function Contact() {
               <option>Internal Ops Copilots</option>
               <option>Not sure yet, help me figure it out</option>
             </select>
-            <textarea
-              rows="4"
-              placeholder="Tell us a bit about your business and what eats up your time..."
-            />
             <button type="submit" className="btn btn-primary">
               Send Message
             </button>
@@ -89,6 +73,18 @@ export default function Contact() {
             <p className="eyebrow">Or ask our AI right now</p>
             <LiveChat compact />
           </div>
+        </div>
+
+        <div className="contact-info">
+          {TILES.map((tile) => (
+            <div className="info-tile" key={tile.title}>
+              <div className="card-icon" style={tile.style}>
+                {tile.icon}
+              </div>
+              <h3>{tile.title}</h3>
+              <p>{tile.value}</p>
+            </div>
+          ))}
         </div>
       </section>
 
