@@ -176,7 +176,7 @@ export default function Immersive() {
     const spacer = spacerRef.current;
     const yFor = (r) => spacer.offsetTop + r * (spacer.offsetHeight - window.innerHeight);
     const autoYs = () => knots.filter((k) => k.id.startsWith('auto')).map((k) => yFor((k.a + k.b) / 2));
-    let lastWheel = 0, stepping = false;
+    let lastWheel = 0, lastStep = 0, wheelAcc = 0, stepping = false;
     const stepTarget = (dir) => {
       const ys = autoYs();
       const y = window.scrollY;
@@ -189,23 +189,30 @@ export default function Immersive() {
       const to = stepTarget(dir);
       if (to === null) return false;
       stepping = true;
+      lastStep = performance.now();
       window.scrollTo({ top: to, behavior: 'smooth' });
-      // Stay locked until the glide has finished; after that, only a fresh
-      // gesture (a pause in wheel events) can move on again.
-      setTimeout(() => { stepping = false; }, 800);
+      setTimeout(() => { stepping = false; }, 700);
       return true;
     };
     const onWheel = (e) => {
       if (e.ctrlKey) return;                                // pinch-zoom on trackpads
       const dy = e.deltaMode === 1 ? e.deltaY * 32 : e.deltaY;
       const now = performance.now();
-      const fresh = now - lastWheel > 300;                  // a new gesture, not momentum from the last
+      const gap = now - lastWheel;
       lastWheel = now;
       if (stepTarget(Math.sign(dy)) !== null) {
         e.preventDefault();
-        if (fresh && !stepping && Math.abs(dy) > 1) step(Math.sign(dy));
+        if (stepping) { wheelAcc = 0; return; }                  // still gliding to the last node
+        // Trackpad momentum keeps sending events after a swipe. Treat that
+        // tail as part of the same swipe (so one swipe = one node), but only
+        // for a moment: if you keep scrolling, it moves on again.
+        if (now - lastStep < 1100 && gap < 180) { wheelAcc = 0; return; }
+        if (gap > 180) wheelAcc = 0;
+        wheelAcc += dy;
+        if (Math.abs(wheelAcc) >= 40) { wheelAcc = 0; step(Math.sign(dy)); }
         return;
       }
+      wheelAcc = 0;
       // Over a text panel, wheel turns still fly the camera rather than
       // being swallowed by the panel.
       if (layer.contains(e.target)) {
