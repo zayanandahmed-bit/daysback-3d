@@ -18,11 +18,11 @@ import { useCardTilt, useScrollReveal } from './hooks/useSiteEffects.js';
 const Background = lazy(() => import('./components/Background.jsx'));
 
 const TITLES = {
-  '/': 'DAYSBACK.SI | Custom AI Agents & Automations',
-  '/services': 'Services | DAYSBACK.SI',
-  '/reviews': 'Reviews | DAYSBACK.SI',
-  '/about': 'About | DAYSBACK.SI',
-  '/contact': 'Contact | DAYSBACK.SI',
+  '/': 'DaysBack | Custom AI Agents & Automations for Businesses',
+  '/services': 'Services | DaysBack: AI Agents, AI Receptionists & Automation',
+  '/reviews': 'Reviews | DaysBack',
+  '/about': 'About DaysBack | AI Automation Agency',
+  '/contact': 'Contact DaysBack | Book a Free 27-Minute Strategy Call',
 };
 
 export default function App() {
@@ -32,7 +32,7 @@ export default function App() {
   useCardTilt(pathname);
 
   useEffect(() => {
-    document.title = TITLES[pathname] ?? TITLES['/'];
+    document.title = TITLES[pathname.replace(/\/$/, '') || '/'] ?? TITLES['/'];
     window.scrollTo(0, 0);
   }, [pathname]);
 
