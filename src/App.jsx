@@ -40,6 +40,16 @@ export default function App() {
     window.scrollTo(0, 0);
   }, [pathname]);
 
+  // Cookie-free page-view count (no IPs or cookies stored); team pages skipped.
+  useEffect(() => {
+    const url = import.meta.env.VITE_TRACK_URL;
+    if (!url || pathname.startsWith('/reply')) return;
+    fetch(url, {
+      method: 'POST', keepalive: true, headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ path: pathname, referrer: document.referrer }),
+    }).catch(() => {});
+  }, [pathname]);
+
   return (
     <>
       <Intro />
