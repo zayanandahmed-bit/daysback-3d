@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /reply
+
+Sitemap: https://daysback.si/sitemap.xml
