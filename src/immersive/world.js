@@ -344,6 +344,11 @@ export function createWorld(canvas, { services, automations, onHover, onSelect }
     lookCurve.getPoint(u, tmpLook);
     // Narrow screens see less sideways, so step back to keep each scene in frame.
     if (camera.aspect < 1) {
+      // On desktop the service cards sit right of centre to leave room for the
+      // text panel; on a phone the panel is underneath, so centre them.
+      const w = Math.max(0, 1 - Math.abs(progress - 0.41) / 0.1);
+      const dx = (SERVICE_CENTER.x - tmpLook.x) * w;
+      camera.position.x += dx; tmpLook.x += dx;
       const k = 1 + (1 - camera.aspect) * 1.6;
       camera.position.sub(tmpLook).multiplyScalar(k).add(tmpLook);
     }

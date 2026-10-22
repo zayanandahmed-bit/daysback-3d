@@ -1399,3 +1399,12 @@ html:not(.intro-done) .scroll-hint { opacity: 0; }
 .reply-page .form-note.err { color: var(--accent2); }
 .reply-form label { display: flex; flex-direction: column; gap: .4rem; font-weight: 600; font-size: .9rem; }
 .reply-form input, .reply-form textarea { font-weight: 400; }
+
+/* ---------- phones ---------- */
+@media (max-width: 600px) {
+  /* iOS zooms the page into any field under 16px; keep them at 16px. */
+  input, textarea, select { font-size: 16px; }
+  .contact-form, .contact-split .contact-form { padding: 1.4rem; }
+  .contact-form .btn { align-self: stretch; text-align: center; }
+  .about-visual { min-height: 170px; font-size: 3rem; }
+}
