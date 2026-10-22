@@ -20,7 +20,7 @@ import { useCardTilt, useScrollReveal } from './hooks/useSiteEffects.js';
 const Background = lazy(() => import('./components/Background.jsx'));
 
 const TITLES = {
-  '/': 'DaysBack | Custom AI Agents & Automations for Businesses',
+  '/': 'DaysBack | Get Your Days Back with Custom AI Agents & Automation',
   '/services': 'Services | DaysBack: AI Agents, AI Receptionists & Automation',
   '/reviews': 'Reviews | DaysBack',
   '/about': 'About DaysBack | AI Automation Agency',
