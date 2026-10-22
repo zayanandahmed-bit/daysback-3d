@@ -7,4 +7,7 @@ export const REVIEWS = [
   "The WhatsApp followup agent doubled our booking rate in the first month. Communication throughout the project was excellent. And there communication is really fast.",
   "We run an e-commerce store and their support bot now handles 80% of customer questions instantly and make our customers a higher chance of buying products. Secondly it also does the Refund queries, order tracking, everything.",
   "Great result. The reporting copilot saves me hours every Monday. And my team and i are very helped because of this.",
+  "As a small clinic we coudlnt afford a full time person such as a receptionist and we got to know of what Daysback is and they helped us scale massively at a very low cost through there flexible payment plans and there wonderful AI receptionist",
+  "They automated our whole quoting process from when the enquiry comes in, ok then the quote goes out in secs with zero manual input, tthese systems that they built have enabled us to save our days worth of time.",
+  "The website they built it us was one of the best websites i have seen its a 3d website and trust me these guys know what they are doing, i highly recommand to go with them.",
 ];
