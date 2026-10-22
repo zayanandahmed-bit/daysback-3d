@@ -34,7 +34,7 @@ export function ReviewsGrid() {
             <div className="avatar" style={{ background: r.color }}>{r.initials}</div>
             <div className="review-meta">
               <div className="review-name">{r.name}</div>
-              <div className="review-date">Google review</div>
+              <div className="review-date">{r.date}</div>
             </div>
             <span className="review-g g-logo">
               <span className="g1">G</span>
