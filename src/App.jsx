@@ -40,14 +40,44 @@ export default function App() {
     window.scrollTo(0, 0);
   }, [pathname]);
 
-  // Cookie-free page-view count (no IPs or cookies stored); team pages skipped.
+  // Cookie-free visitor stats (no cookies or IPs stored). Sends a "view" for
+  // each page and a "leave" with the seconds spent on it. Team pages skipped.
   useEffect(() => {
     const url = import.meta.env.VITE_TRACK_URL;
-    if (!url || pathname.startsWith('/reply')) return;
-    fetch(url, {
-      method: 'POST', keepalive: true, headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ path: pathname, referrer: document.referrer }),
-    }).catch(() => {});
+    if (!url || pathname.startsWith('/reply')) return undefined;
+    const send = (data) => {
+      const body = JSON.stringify(data);
+      try {
+        if (navigator.sendBeacon?.(url, new Blob([body], { type: 'text/plain' }))) return;
+      } catch { /* fall through */ }
+      fetch(url, { method: 'POST', keepalive: true, headers: { 'Content-Type': 'text/plain' }, body }).catch(() => {});
+    };
+    let campaign = '';
+    try {
+      const q = new URLSearchParams(window.location.search);
+      campaign = q.get('utm_campaign') || q.get('utm_source') || sessionStorage.getItem('db-utm') || '';
+      if (campaign) sessionStorage.setItem('db-utm', campaign);
+    } catch { /* storage blocked */ }
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+    send({ kind: 'view', path: pathname, referrer: document.referrer, tz, campaign });
+
+    let start = Date.now(), active = 0, sent = false;
+    const leave = () => {
+      if (sent) return;
+      sent = true;
+      active += document.visibilityState === 'visible' ? Date.now() - start : 0;
+      send({ kind: 'leave', path: pathname, seconds: Math.round(active / 1000) });
+    };
+    const onVis = () => {
+      if (document.visibilityState === 'hidden') { active += Date.now() - start; leave(); }
+    };
+    window.addEventListener('pagehide', leave);
+    document.addEventListener('visibilitychange', onVis);
+    return () => {
+      window.removeEventListener('pagehide', leave);
+      document.removeEventListener('visibilitychange', onVis);
+      leave();
+    };
   }, [pathname]);
 
   return (
