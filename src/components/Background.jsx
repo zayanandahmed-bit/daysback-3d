@@ -33,7 +33,7 @@ export default function Background() {
     }
     // 1.5 rather than 2: on retina screens that is ~45% fewer pixels to draw every
     // frame, and thin points and lines look the same at that density.
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, window.innerWidth < 760 ? 2 : 1.5));
     renderer.setSize(window.innerWidth, window.innerHeight);
 
     const scene = new THREE.Scene();

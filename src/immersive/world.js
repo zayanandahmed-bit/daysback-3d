@@ -82,7 +82,7 @@ function cardTexture(card, i) {
   ctx.fillText('CLICK TO EXPLORE  →', 70, 625);
   const tex = new THREE.CanvasTexture(cv);
   tex.colorSpace = THREE.SRGBColorSpace;
-  tex.anisotropy = 4;
+  tex.anisotropy = 8;
   return tex;
 }
 
@@ -117,10 +117,12 @@ function glowTexture() {
 }
 
 export function createWorld(canvas, { services, automations, onHover, onSelect }) {
-  // Phones get a lighter scene: fewer particles and fewer pixels per frame.
+  // Phones get a lighter scene (fewer particles) but full sharpness: their
+  // screens are small, so rendering at up to 2x the CSS pixels stays cheap and
+  // keeps lines, nodes and labels crisp on high-density displays.
   const small = window.innerWidth < 760;
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: !small, alpha: false, powerPreference: 'high-performance' });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, small ? 1.25 : 1.5));
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: 'high-performance' });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, small ? 2 : 1.5));
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setClearColor(C.paper, 1);
 

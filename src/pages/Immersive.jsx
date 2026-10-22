@@ -8,7 +8,6 @@ import LiveChat from '../components/LiveChat.jsx';
 import ChatPlayback from '../immersive/ChatPlayback.jsx';
 import Marquee from '../components/Marquee.jsx';
 import Guarantees from '../components/Guarantees.jsx';
-import ImmersivePhone from './ImmersivePhone.jsx';
 import { INTEGRATIONS, SERVICES } from '../data/home.js';
 
 // Scroll ranges (0-1) where each text panel is on screen. They line up with
@@ -29,21 +28,7 @@ const SCROLL_SCREENS = 30;   // how long the journey is, in screen heights
 const fadeFor = ([a, b], p) =>
   Math.max(0, Math.min(1, (p - (a - FADE)) / FADE, ((b + FADE) - p) / FADE));
 
-// Phones get their own layout (see ImmersivePhone.jsx); tablets and up get
-// the scroll-driven 3D fly-through below.
-const PHONE = '(max-width: 760px)';
 export default function Immersive() {
-  const [phone, setPhone] = useState(() => window.matchMedia(PHONE).matches);
-  useEffect(() => {
-    const mq = window.matchMedia(PHONE);
-    const on = () => setPhone(mq.matches);
-    mq.addEventListener('change', on);
-    return () => mq.removeEventListener('change', on);
-  }, []);
-  return phone ? <ImmersivePhone /> : <ImmersiveDesktop />;
-}
-
-function ImmersiveDesktop() {
   const canvasRef = useRef(null);
   const spacerRef = useRef(null);
   const panelRefs = useRef({});
