@@ -96,7 +96,11 @@ export default function App() {
       )}
       <Nav />
       <Routes>
-        <Route path="/" element={<Suspense fallback={null}><Immersive /></Suspense>} />
+        <Route path="/" element={
+          // Placeholder as tall as the 3D page while it downloads, so the
+          // footer doesn't flash up the screen and jump back down.
+          <Suspense fallback={<main className="imm" style={{ minHeight: '3000vh' }} />}><Immersive /></Suspense>
+        } />
         <Route path="/services" element={<Services />} />
         <Route path="/reviews" element={<Reviews />} />
         <Route path="/about" element={<About />} />
