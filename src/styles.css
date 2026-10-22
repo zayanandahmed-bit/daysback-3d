@@ -202,11 +202,12 @@ main, .nav, .footer { position: relative; z-index: 1; }
 }
 .marquee-track {
   display: flex;
-  gap: 1.2rem;
   white-space: nowrap;
   width: max-content;
   animation: scroll-left 32s linear infinite;
 }
+/* spacing as padding, not flex gap, so -50% lands exactly on the second half */
+.marquee-track span { padding-right: 1.2rem; }
 .marquee-track span {
   font-size: 0.85rem;
   letter-spacing: 0.1em;
