@@ -12,7 +12,7 @@
 <body>
 <script>
   // Homepage is the 3D world: mark it before the first paint.
-  if (/\/daysback-3d\/?(index\.html)?$/.test(location.pathname)) document.documentElement.classList.add('imm-mode');
+  if (/^\/(index\.html)?$/.test(location.pathname)) document.documentElement.classList.add('imm-mode');
 </script>
 <div id="root"></div>
 <script type="module" src="/src/main.jsx"></script>

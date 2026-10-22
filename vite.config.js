@@ -5,7 +5,7 @@ import { resolve } from 'node:path';
 
 // The site lives at zayanandahmed-bit.github.io/aireper/, not at the root of
 // the domain, so every built asset URL has to be prefixed with the repo name.
-const BASE = '/daysback-3d/';
+const BASE = '/';
 
 export default defineConfig({
   base: BASE,
