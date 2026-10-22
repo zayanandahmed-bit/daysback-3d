@@ -9,6 +9,7 @@ import Reviews from './pages/Reviews.jsx';
 import About from './pages/About.jsx';
 import Contact from './pages/Contact.jsx';
 import Reply from './pages/Reply.jsx';
+import Thanks from './pages/Thanks.jsx';
 import { useCardTilt, useScrollReveal } from './hooks/useSiteEffects.js';
 
 // Three.js is by far the heaviest thing on the page and it only draws
@@ -23,6 +24,7 @@ const TITLES = {
   '/reviews': 'Reviews | DaysBack',
   '/about': 'About DaysBack | AI Automation Agency',
   '/contact': 'Contact DaysBack | Book a Free 27-Minute Strategy Call',
+  '/thanks': 'Thank you | DaysBack',
 };
 
 export default function App() {
@@ -54,6 +56,7 @@ export default function App() {
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/reply" element={<Reply />} />
+        <Route path="/thanks" element={<Thanks />} />
 
         {/* The site used to be plain .html files, so links already out in the
             world (the WhatsApp share, anything indexed) point at those paths.

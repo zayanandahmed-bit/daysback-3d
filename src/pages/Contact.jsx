@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import LiveChat from '../components/LiveChat.jsx';
 import Marquee from '../components/Marquee.jsx';
 import { EMAIL, WHATSAPP, whatsappLink } from '../data/contact.js';
@@ -40,6 +41,7 @@ const TILES = [
 ];
 
 export default function Contact() {
+  const navigate = useNavigate();
   const [status, setStatus] = useState('idle');   // idle | sending | sent | error
   const [error, setError] = useState('');
 
@@ -63,6 +65,7 @@ export default function Contact() {
       const out = await res.json().catch(() => ({}));
       if (!res.ok || !out.ok) throw new Error(out.error || 'failed');
       setStatus('sent');
+      navigate('/thanks');
       form.reset();
     } catch (err) {
       setStatus('error');

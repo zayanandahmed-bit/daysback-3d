@@ -20,6 +20,8 @@ const PAGES = {
   contact: ['Contact DaysBack | Book a Free 27-Minute Strategy Call',
     'Talk to DaysBack about automating your business. Book a free 27-minute strategy call; we reply within 1 hour. contact@daysback.si'],
 };
+// Not in the sitemap; real files so the URL works on a direct hit.
+const EXTRA = { thanks: ['Thank you | DaysBack', 'Thanks for getting in touch with DaysBack.'] };
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
 
 export default defineConfig({
@@ -35,7 +37,7 @@ export default defineConfig({
       closeBundle() {
         copyFileSync(resolve('dist/index.html'), resolve('dist/404.html'));
         const home = readFileSync(resolve('dist/index.html'), 'utf8');
-        for (const [path, [title, desc]] of Object.entries(PAGES)) {
+        for (const [path, [title, desc]] of Object.entries({ ...PAGES, ...EXTRA })) {
           const url = `${SITE}/${path}/`;
           const html = home
             .replace(/<title>[^<]*<\/title>/, `<title>${esc(title)}</title>`)
@@ -53,7 +55,7 @@ export default defineConfig({
 ${['', ...Object.keys(PAGES)].map((p) => `  <url><loc>${SITE}/${p}${p ? "/" : ""}</loc><lastmod>${today}</lastmod></url>`).join('\n')}
 </urlset>
 `);
-        writeFileSync(resolve('dist/robots.txt'), `User-agent: *\nAllow: /\nDisallow: /reply\n\nSitemap: ${SITE}/sitemap.xml\n`);
+        writeFileSync(resolve('dist/robots.txt'), `User-agent: *\nAllow: /\nDisallow: /reply\nDisallow: /thanks\n\nSitemap: ${SITE}/sitemap.xml\n`);
       },
     },
   ],
