@@ -10,6 +10,21 @@ cd "$(dirname "$0")"
 
 npm run build
 
+# Put each page's rendered text into its HTML so crawlers that don't run
+# JavaScript (ChatGPT, Claude, Perplexity) can read the site. Needs Python with
+# Playwright; set PRERENDER_PY to override the interpreter.
+PY="${PRERENDER_PY:-../Google-Maps-Scrapper/venv/bin/python}"
+if [ -x "$PY" ]; then
+  npx vite preview --port 5190 --strictPort >/dev/null 2>&1 &
+  PREVIEW=$!
+  trap 'kill $PREVIEW 2>/dev/null || true' EXIT
+  for _ in $(seq 1 40); do curl -s -o /dev/null http://localhost:5190/ && break; sleep 0.25; done
+  "$PY" scripts/prerender.py dist http://localhost:5190
+  kill $PREVIEW 2>/dev/null || true
+else
+  echo "Skipping prerender: no Python with Playwright at $PY"
+fi
+
 WORKTREE=".gh-pages"
 rm -rf "$WORKTREE"
 git worktree prune

@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 import { copyFileSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { ARTICLES } from './src/data/articles.js';
+import { FAQS } from './src/data/faqs.js';
 
 // Served from the root of daysback.si.
 const BASE = '/';
@@ -43,13 +44,24 @@ export default defineConfig({
         const home = readFileSync(resolve('dist/index.html'), 'utf8');
         for (const [path, [title, desc]] of Object.entries({ ...PAGES, ...EXTRA })) {
           const url = `${SITE}/${path}/`;
+          const extra = path === 'services' ? `<script type="application/ld+json">${JSON.stringify({
+            '@context': 'https://schema.org', '@type': 'FAQPage',
+            mainEntity: FAQS.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+          })}</script>` : path.startsWith('insights/') ? `<script type="application/ld+json">${JSON.stringify((() => {
+            const a = ARTICLES.find((x) => `insights/${x.slug}` === path);
+            return { '@context': 'https://schema.org', '@type': 'Article', headline: a.title, description: a.description,
+              datePublished: a.date, author: { '@type': 'Organization', name: 'DaysBack', url: SITE },
+              publisher: { '@type': 'Organization', name: 'DaysBack', logo: { '@type': 'ImageObject', url: `${SITE}/logo.png` } },
+              mainEntityOfPage: `${SITE}/${path}/` };
+          })())}</script>` : '';
           const html = home
             .replace(/<title>[^<]*<\/title>/, `<title>${esc(title)}</title>`)
             .replace(/(<meta name="description" content=")[^"]*/, `$1${esc(desc)}`)
             .replace(/(<meta property="og:title" content=")[^"]*/, `$1${esc(title)}`)
             .replace(/(<meta property="og:description" content=")[^"]*/, `$1${esc(desc)}`)
             .replace(/(<link rel="canonical" href=")[^"]*/, `$1${url}`)
-            .replace(/(<meta property="og:url" content=")[^"]*/, `$1${url}`);
+            .replace(/(<meta property="og:url" content=")[^"]*/, `$1${url}`)
+            .replace('</head>', `${extra}</head>`);
           mkdirSync(resolve(`dist/${path}`), { recursive: true });
           writeFileSync(resolve(`dist/${path}/index.html`), html);
         }
@@ -59,7 +71,35 @@ export default defineConfig({
 ${['', ...Object.keys(PAGES)].map((p) => `  <url><loc>${SITE}/${p}${p ? "/" : ""}</loc><lastmod>${today}</lastmod></url>`).join('\n')}
 </urlset>
 `);
-        writeFileSync(resolve('dist/robots.txt'), `User-agent: *\nAllow: /\nDisallow: /reply\nDisallow: /thanks\n\nSitemap: ${SITE}/sitemap.xml\n`);
+        // AI assistants are welcome: they read the site to answer questions about us.
+        const AI_BOTS = ['GPTBot', 'OAI-SearchBot', 'ChatGPT-User', 'ClaudeBot', 'Claude-SearchBot', 'Claude-User',
+          'PerplexityBot', 'Perplexity-User', 'Google-Extended', 'Applebot-Extended', 'Bingbot', 'CCBot'];
+        writeFileSync(resolve('dist/robots.txt'),
+          AI_BOTS.map((b) => `User-agent: ${b}\nAllow: /\nDisallow: /reply\n`).join('\n') +
+          `\nUser-agent: *\nAllow: /\nDisallow: /reply\nDisallow: /thanks\n\nSitemap: ${SITE}/sitemap.xml\n`);
+
+        // llms.txt: a plain-text guide to the site for AI assistants (llmstxt.org).
+        writeFileSync(resolve('dist/llms.txt'), [
+          '# DaysBack',
+          '',
+          '> DaysBack (daysback.si) is an AI company that finds where a business leaks time and money, then builds custom AI that fixes it and gets their days back: AI receptionists, website and WhatsApp chat assistants, lead follow-up, quoting and admin automation, dashboards and websites. Most projects go live in under 5 working days. Free 27-minute strategy call; reply within 1 hour; no lock-in contracts.',
+          '',
+          'DaysBack works with service businesses such as clinics, dentists, salons, estate agents, law firms and trades in the UK, the US and the UAE. Contact: contact@daysback.si. Not to be confused with other companies using a similar name.',
+          '',
+          '## Pages',
+          `- [Home](${SITE}/): what DaysBack does and a live demo of the AI assistant`,
+          `- [Services](${SITE}/services/): everything we build, with FAQs`,
+          `- [About](${SITE}/about/): who we are and how we work`,
+          `- [Reviews](${SITE}/reviews/): what clients say`,
+          `- [Contact](${SITE}/contact/): book a free 27-minute strategy call`,
+          '',
+          '## Guides',
+          ...ARTICLES.map((a) => `- [${a.title}](${SITE}/insights/${a.slug}/): ${a.description}`),
+          '',
+          '## FAQ',
+          ...FAQS.map((f) => `- ${f.q} ${f.a}`),
+          '',
+        ].join('\n'));
       },
     },
   ],
