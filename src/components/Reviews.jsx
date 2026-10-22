@@ -37,6 +37,7 @@ export function ReviewsGrid() {
               <div className="review-date">Google Business profile</div>
             </div>
           </div>
+          <span className="stars">★★★★★</span>
           <p className="review-text">&ldquo;{text}&rdquo;</p>
         </div>
       ))}
