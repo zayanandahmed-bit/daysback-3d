@@ -1,0 +1,25 @@
+# DaysBack
+
+> DaysBack (daysback.si) is an AI company that finds where a business leaks time and money, then builds custom AI that fixes it and gets their days back: AI receptionists, website and WhatsApp chat assistants, lead follow-up, quoting and admin automation, dashboards and websites. Most projects go live in under 5 working days. Free 27-minute strategy call; reply within 1 hour; no lock-in contracts.
+
+DaysBack works with service businesses such as clinics, dentists, salons, estate agents, law firms and trades in the UK, the US and the UAE. Contact: contact@daysback.si. Not to be confused with other companies using a similar name.
+
+## Pages
+- [Home](https://daysback.si/): what DaysBack does and a live demo of the AI assistant
+- [Services](https://daysback.si/services/): everything we build, with FAQs
+- [About](https://daysback.si/about/): who we are and how we work
+- [Reviews](https://daysback.si/reviews/): what clients say
+- [Contact](https://daysback.si/contact/): book a free 27-minute strategy call
+
+## Guides
+- [What Is an AI Receptionist? How It Works for Small Businesses](https://daysback.si/insights/what-is-an-ai-receptionist/): An AI receptionist answers every call, books appointments and follows up, day or night. Here is how it works, who it suits, and how to get started.
+- [12 Tasks Every Small Business Should Automate](https://daysback.si/insights/tasks-every-small-business-should-automate/): From lead follow-up to invoices and reviews: 12 everyday tasks small businesses can hand to automation and AI, and get hours back every week.
+- [Speed to Lead: Why Replying in Minutes Wins More Customers](https://daysback.si/insights/speed-to-lead/): The business that replies first usually wins the customer. How to answer every lead within minutes, even when you are busy, using simple automation.
+- [WhatsApp Automation for Business: What You Can Automate](https://daysback.si/insights/whatsapp-automation-for-business/): Customers already message you on WhatsApp. Here is what you can automate there, from instant replies and bookings to reminders and follow-ups.
+- [AI Chatbot vs Live Chat: Which Does Your Website Need?](https://daysback.si/insights/ai-chatbot-vs-live-chat/): Live chat needs someone online. An AI chatbot answers instantly, 24/7. The pros and cons of each, and why most small businesses do best with both.
+
+## FAQ
+- How long does it take to build an AI agent? Most projects go from first call to deployed agent in under 5 working business days, depending on how many tools we're integrating.
+- Do I need technical knowledge to use it? No, we build everything, connect it to the tools you already use, and hand it over working. You just watch the results.
+- What tools can you integrate with? Pretty much anything with an API: Gmail, Outlook, HubSpot, Salesforce, Notion, Slack, WhatsApp, Google Sheets, Stripe, Calendly, and hundreds more.
+- What does it cost? Every build is custom, so pricing depends on scope. Book a free call and we'll give you a clear quote after the audit. No surprises.

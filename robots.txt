@@ -1,3 +1,51 @@
+User-agent: GPTBot
+Allow: /
+Disallow: /reply
+
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /reply
+
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /reply
+
+User-agent: ClaudeBot
+Allow: /
+Disallow: /reply
+
+User-agent: Claude-SearchBot
+Allow: /
+Disallow: /reply
+
+User-agent: Claude-User
+Allow: /
+Disallow: /reply
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /reply
+
+User-agent: Perplexity-User
+Allow: /
+Disallow: /reply
+
+User-agent: Google-Extended
+Allow: /
+Disallow: /reply
+
+User-agent: Applebot-Extended
+Allow: /
+Disallow: /reply
+
+User-agent: Bingbot
+Allow: /
+Disallow: /reply
+
+User-agent: CCBot
+Allow: /
+Disallow: /reply
+
 User-agent: *
 Allow: /
 Disallow: /reply
