@@ -17,6 +17,9 @@ DaysBack works with service businesses such as clinics, dentists, salons, estate
 - [Speed to Lead: Why Replying in Minutes Wins More Customers](https://daysback.si/insights/speed-to-lead/): The business that replies first usually wins the customer. How to answer every lead within minutes, even when you are busy, using simple automation.
 - [WhatsApp Automation for Business: What You Can Automate](https://daysback.si/insights/whatsapp-automation-for-business/): Customers already message you on WhatsApp. Here is what you can automate there, from instant replies and bookings to reminders and follow-ups.
 - [AI Chatbot vs Live Chat: Which Does Your Website Need?](https://daysback.si/insights/ai-chatbot-vs-live-chat/): Live chat needs someone online. An AI chatbot answers instantly, 24/7. The pros and cons of each, and why most small businesses do best with both.
+- [How Much Does AI Automation Cost for a Small Business?](https://daysback.si/insights/ai-automation-cost-small-business/): What you actually pay for when you automate with AI: the build, the running costs and your time. How to tell whether it will pay for itself before you spend anything.
+- [How to Stop Missing Calls at Your Clinic, Salon or Practice](https://daysback.si/insights/stop-missing-calls-clinic-salon/): Busy front desks miss calls, and missed calls become lost bookings. Practical fixes, from call routing to an AI receptionist that answers and books 24/7.
+- [Is AI Automation Worth It? A Simple Way to Decide](https://daysback.si/insights/is-ai-automation-worth-it/): A plain-English checklist to decide whether a task in your business is worth automating with AI, and how to start small without wasting money.
 
 ## FAQ
 - How long does it take to build an AI agent? Most projects go from first call to deployed agent in under 5 working business days, depending on how many tools we're integrating.
