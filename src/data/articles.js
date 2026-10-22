@@ -7,7 +7,7 @@ export const ARTICLES = [
     slug: 'what-is-an-ai-receptionist',
     title: 'What Is an AI Receptionist? How It Works for Small Businesses',
     description:
-      'An AI receptionist answers every call, books appointments and follows up, day or night. Here is how it works, what it costs to run, and when it makes sense.',
+      'An AI receptionist answers every call, books appointments and follows up, day or night. Here is how it works, who it suits, and how to get started.',
     date: '2026-10-22',
     read: '5 min read',
     body: [
