@@ -10,6 +10,7 @@ import About from './pages/About.jsx';
 import Contact from './pages/Contact.jsx';
 import Reply from './pages/Reply.jsx';
 import Thanks from './pages/Thanks.jsx';
+import { Article, InsightsIndex } from './pages/Insights.jsx';
 import { useCardTilt, useScrollReveal } from './hooks/useSiteEffects.js';
 
 // Three.js is by far the heaviest thing on the page and it only draws
@@ -25,6 +26,7 @@ const TITLES = {
   '/about': 'About DaysBack | AI Automation Agency',
   '/contact': 'Contact DaysBack | Book a Free 27-Minute Strategy Call',
   '/thanks': 'Thank you | DaysBack',
+  '/insights': 'Insights | DaysBack: AI & Automation Guides',
 };
 
 export default function App() {
@@ -34,7 +36,7 @@ export default function App() {
   useCardTilt(pathname);
 
   useEffect(() => {
-    document.title = TITLES[pathname.replace(/\/$/, '') || '/'] ?? TITLES['/'];
+    if (!pathname.startsWith('/insights/')) document.title = TITLES[pathname.replace(/\/$/, '') || '/'] ?? TITLES['/'];
     window.scrollTo(0, 0);
   }, [pathname]);
 
@@ -57,6 +59,8 @@ export default function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/reply" element={<Reply />} />
         <Route path="/thanks" element={<Thanks />} />
+        <Route path="/insights" element={<InsightsIndex />} />
+        <Route path="/insights/:slug" element={<Article />} />
 
         {/* The site used to be plain .html files, so links already out in the
             world (the WhatsApp share, anything indexed) point at those paths.

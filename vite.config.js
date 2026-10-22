@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { copyFileSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { ARTICLES } from './src/data/articles.js';
 
 // Served from the root of daysback.si.
 const BASE = '/';
@@ -22,6 +23,9 @@ const PAGES = {
 };
 // Not in the sitemap; real files so the URL works on a direct hit.
 const EXTRA = { thanks: ['Thank you | DaysBack', 'Thanks for getting in touch with DaysBack.'] };
+PAGES.insights = ['Insights | DaysBack: AI & Automation Guides for Small Businesses',
+  'Plain-English guides to AI receptionists, chatbots, WhatsApp automation and the tasks every small business should automate.'];
+for (const a of ARTICLES) PAGES[`insights/${a.slug}`] = [`${a.title} | DaysBack`, a.description];
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
 
 export default defineConfig({
