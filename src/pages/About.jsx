@@ -62,7 +62,7 @@ function ValuesScroller({ values }) {
 
   const v = values[active];
   return (
-    <div className="values-track" ref={trackRef} style={{ height: `${values.length * 70 + 30}vh` }}>
+    <div className="values-track" ref={trackRef} style={{ height: `${values.length * 70 + (window.innerWidth < 760 ? 0 : 30)}vh` }}>
       <div className="values-pin">
         <div className={'value-step in' + (active % 2 ? ' flip' : '')} key={active}>
           <div className="value-stat">

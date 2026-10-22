@@ -24,6 +24,7 @@ const PAGES = {
 };
 // Not in the sitemap; real files so the URL works on a direct hit.
 const EXTRA = { thanks: ['Thank you | DaysBack', 'Thanks for getting in touch with DaysBack.'] };
+PAGES.privacy = ['Privacy policy | DaysBack', 'How DaysBack handles your information: what we collect, why, who processes it, and your rights.'];
 PAGES.insights = ['Insights | DaysBack: AI & Automation Guides for Small Businesses',
   'Plain-English guides to AI receptionists, chatbots, WhatsApp automation and the tasks every small business should automate.'];
 for (const a of ARTICLES) PAGES[`insights/${a.slug}`] = [`${a.title} | DaysBack`, a.description];

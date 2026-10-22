@@ -66,6 +66,7 @@ export default function Services() {
       </section>
 
       <section className="section" style={{ paddingTop: '2rem' }}>
+        <h2 className="sr-only">Our core services</h2>
         <div className="svc-grid">
           {CORE.map((s) => (
             <article className={'card svc-card tone-' + s.tone} data-tilt key={s.title}>

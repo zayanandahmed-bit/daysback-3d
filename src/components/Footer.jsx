@@ -15,22 +15,23 @@ export default function Footer() {
           </p>
         </div>
         <div>
-          <h4>Pages</h4>
+          <h2>Pages</h2>
           <Link to="/">Home</Link>
           <Link to="/services">Services</Link>
           <Link to="/reviews">Reviews</Link>
           <Link to="/about">About</Link>
           <Link to="/insights">Insights</Link>
+          <Link to="/privacy">Privacy</Link>
         </div>
         <div>
-          <h4>Services</h4>
+          <h2>Services</h2>
           <Link to="/services">Custom AI Agents</Link>
           <Link to="/services">Workflow Automation</Link>
           <Link to="/services">Voice &amp; Chat Agents</Link>
           <Link to="/services">Ops Copilots</Link>
         </div>
         <div>
-          <h4>Get in touch</h4>
+          <h2>Get in touch</h2>
           <Link to="/contact">Let's Map Your Opportunities</Link>
           <Link to="/contact">Contact</Link>
           <a href={'mailto:' + EMAIL}>{EMAIL}</a>

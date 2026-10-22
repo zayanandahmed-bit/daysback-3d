@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import LiveChat from '../components/LiveChat.jsx';
 import Marquee from '../components/Marquee.jsx';
 import { EMAIL, WHATSAPP, whatsappLink } from '../data/contact.js';
@@ -97,11 +97,11 @@ export default function Contact() {
             <p className="eyebrow">Send us a message</p>
           <form className="contact-form" onSubmit={submit} noValidate={false}>
             <div className="form-row">
-              <input type="text" name="name" placeholder="Name" required maxLength={100} />
-              <input type="email" name="email" placeholder="Email" required maxLength={160} />
+              <input type="text" name="name" placeholder="Name" aria-label="Name" autoComplete="name" required maxLength={100} />
+              <input type="email" name="email" placeholder="Email" aria-label="Email" autoComplete="email" required maxLength={160} />
             </div>
-            <input type="text" name="company" placeholder="Company" maxLength={120} />
-            <select name="interest" defaultValue="">
+            <input type="text" name="company" placeholder="Company" aria-label="Company" autoComplete="organization" maxLength={120} />
+            <select name="interest" defaultValue="" aria-label="What do you want to automate?">
               <option value="" disabled>
                 What do you want to automate?
               </option>
@@ -120,6 +120,7 @@ export default function Contact() {
               ✓ Thanks, we'll be in touch within 1 hour.
             </p>
             {status === 'error' && <p className="form-error">{error}</p>}
+            <p className="form-privacy">We only use your details to reply to you. <Link to="/privacy">Privacy policy</Link></p>
           </form>
           </div>
           <div className="contact-split-chat">
@@ -134,7 +135,7 @@ export default function Contact() {
               <div className="card-icon" style={tile.style}>
                 {tile.icon}
               </div>
-              <h3>{tile.title}</h3>
+              <h2>{tile.title}</h2>
               <p>{tile.href ? <a href={tile.href} {...(tile.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>{tile.value}</a> : tile.value}</p>
             </div>
           ))}

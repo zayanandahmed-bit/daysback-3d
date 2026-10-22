@@ -3,13 +3,16 @@ import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import Nav from './components/Nav.jsx';
 import Footer from './components/Footer.jsx';
 import Intro from './components/Intro.jsx';
-import Immersive from './pages/Immersive.jsx';
+// The homepage carries the 3D engine; loading it on demand keeps the other
+// pages light. main.jsx starts fetching it early when you land on the homepage.
+const Immersive = lazy(() => import('./pages/Immersive.jsx'));
 import Services from './pages/Services.jsx';
 import Reviews from './pages/Reviews.jsx';
 import About from './pages/About.jsx';
 import Contact from './pages/Contact.jsx';
 import Reply from './pages/Reply.jsx';
 import Thanks from './pages/Thanks.jsx';
+import Privacy from './pages/Privacy.jsx';
 import { Article, InsightsIndex } from './pages/Insights.jsx';
 import { useCardTilt, useScrollReveal } from './hooks/useSiteEffects.js';
 
@@ -26,6 +29,7 @@ const TITLES = {
   '/about': 'About DaysBack | AI Automation Agency',
   '/contact': 'Contact DaysBack | Book a Free 27-Minute Strategy Call',
   '/thanks': 'Thank you | DaysBack',
+  '/privacy': 'Privacy policy | DaysBack',
   '/insights': 'Insights | DaysBack: AI & Automation Guides',
 };
 
@@ -92,13 +96,14 @@ export default function App() {
       )}
       <Nav />
       <Routes>
-        <Route path="/" element={<Immersive />} />
+        <Route path="/" element={<Suspense fallback={null}><Immersive /></Suspense>} />
         <Route path="/services" element={<Services />} />
         <Route path="/reviews" element={<Reviews />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/reply" element={<Reply />} />
         <Route path="/thanks" element={<Thanks />} />
+        <Route path="/privacy" element={<Privacy />} />
         <Route path="/insights" element={<InsightsIndex />} />
         <Route path="/insights/:slug" element={<Article />} />
 
